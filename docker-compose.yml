@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mysql-service:
+    container_name: demo-sql
+    image: mysql:latest
+    environment:
+      MYSQL_USER: mysql
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: 123456a@
+      MYSQL_DATABASE: demo-user
+    ports:
+      - 3308:3306
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql/
+
+  mongodb:
+    container_name: demo-mongo
+    image: mongo:5.0-focal
+    ports:
+      - '27017:27017'
+    volumes:
+      - /mongodbdata:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456a@
+  # volumes:
+  #   mongodbdata:
