@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ExceptionsModule } from 'src/common/exceptions/exceptions.module';
-import { UserController } from './user.controller';
-import { UserMongoService } from './user.mongo.service';
-import { UserMysqlService } from './user.mysql.service';
+import { StudentService } from './student.service';
 
 @Module({
   imports: [ExceptionsModule],
-  controllers: [UserController],
-  providers: [UserMysqlService, UserMongoService],
+  controllers: [],
+  providers: [StudentService],
+  exports: [StudentService]
 })
 export class UserModule {}
 

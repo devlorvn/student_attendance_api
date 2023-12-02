@@ -1,4 +1,9 @@
 export enum UserType {
   ADMIN,
-  STUDENT,
+  STUDENT
+}
+
+export enum UserGender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE'
 }

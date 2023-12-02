@@ -4,11 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvironmentConfigModule } from './common/config/env/env.config.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
-import { ProductModule } from './modules/product/product.module';
-import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/app/auth/auth.module';
 
 @Module({
-  imports: [EnvironmentConfigModule, UserModule, DatabaseModule, ProductModule],
+  imports: [EnvironmentConfigModule, DatabaseModule, AuthModule],
   controllers: [AppController],
   providers: [
     AppService,
