@@ -2,7 +2,7 @@ import { plainToClass } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString, validateSync } from 'class-validator';
 
 enum Environment {
-  development = 'dev',
+  development = 'development',
   production = 'production',
   local = 'local',
   test = 'test',
