@@ -1,14 +1,17 @@
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 import { ExceptionsModule } from 'src/common/exceptions/exceptions.module';
 import { StudentService } from './student.service';
+import { StudentController } from './student.controller';
+import { Student } from './entities/student.entity';
 
 @Module({
-  imports: [ExceptionsModule],
-  controllers: [],
+  imports: [TypeOrmModule.forFeature([Student]), ExceptionsModule],
+  controllers: [StudentController],
   providers: [StudentService],
   exports: [StudentService]
 })
-export class UserModule {}
+export class StudentModule {}
 
 // router -> middleware -> controller -> middleware -> return response
 

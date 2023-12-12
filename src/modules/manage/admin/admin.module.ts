@@ -6,9 +6,10 @@ import AdminController from './admin.controller';
 import AdminService from './admin.service';
 import { PositionAdminModule } from '../positionAdmin/positionAdmin.module';
 import PositionAdminService from '../positionAdmin/positionAdmin.service';
+import PositionAdmin from '../positionAdmin/entities/positionAdmin.entity';
 
 @Module({
-  imports: [ExceptionsModule, PositionAdminModule],
+  imports: [TypeOrmModule.forFeature([Admin, PositionAdmin]), ExceptionsModule, PositionAdminModule],
   controllers: [AdminController],
   providers: [AdminService, PositionAdminService],
   exports: [AdminService],

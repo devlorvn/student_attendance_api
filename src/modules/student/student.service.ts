@@ -6,31 +6,38 @@ import {
 import { ModuleRef } from '@nestjs/core';
 import { loadEntityManager } from 'src/common/helpers/loadEntityManager.helper';
 import { CreateStudentDto } from './dto/student.dto';
-import { Student as StudentEntity } from './entities/student.entity';
+import { Student } from './entities/student.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  DeepPartial,
+  FindOptionsSelect,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { NullableType } from 'src/common/types/nullable.type';
 
 @Injectable()
 export class StudentService {
   constructor(
     private moduleRef: ModuleRef,
-    @InjectRepository(StudentEntity)
-    private studentRepository: Repository<StudentEntity>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
   ) {}
 
   async create(createUserDto: CreateStudentDto) {
-    return this.studentRepository.save(this.studentRepository.create(createUserDto));
+    return this.studentRepository.save(
+      this.studentRepository.create(createUserDto),
+    );
   }
 
-  async findAll(systemId: string): Promise<StudentEntity[]> {
+  async findAll(systemId: string): Promise<Student[]> {
     let listUser: any = [];
 
     const entityManager = await loadEntityManager(systemId, this.moduleRef);
     if (!entityManager) {
       throw new InternalServerErrorException();
     }
-    listUser = await entityManager.getRepository(StudentEntity).find();
+    listUser = await entityManager.getRepository(Student).find();
 
     if (!listUser.length) {
       throw new NotFoundException();
@@ -39,19 +46,22 @@ export class StudentService {
     return listUser;
   }
 
-  async findOne(where: FindOptionsWhere<StudentEntity>, fields?: FindOptionsSelect<StudentEntity>): Promise<NullableType<StudentEntity>> {
+  async findOne(
+    where: FindOptionsWhere<Student>,
+    fields?: FindOptionsSelect<Student>,
+  ): Promise<NullableType<Student>> {
     return this.studentRepository.findOne({
       where: where,
-      select: fields
-    })
+      select: fields,
+    });
   }
 
-  async update(mssv: StudentEntity["mssv"], payload: DeepPartial<StudentEntity> ) {
-    return this.studentRepository.save({mssv: mssv, ...payload})
+  async update(mssv: Student['mssv'], payload: DeepPartial<Student>) {
+    return this.studentRepository.save({ mssv: mssv, ...payload });
   }
 
-  async enable(mssv: StudentEntity["mssv"]) {
-    await this.studentRepository.save({mssv: mssv, enable: false})
+  async enable(mssv: Student['mssv']) {
+    await this.studentRepository.save({ mssv: mssv, enable: false });
     return true;
   }
 }
