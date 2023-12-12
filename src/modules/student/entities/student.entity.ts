@@ -17,40 +17,40 @@ export class Student {
   })
   mssv: number;
 
-  @Column({ length: 500, name: 'first_name', type: "varchar" })
+  @Column({ length: 500, name: 'first_name', type: 'varchar' })
   firstName: string;
 
-  @Column({ length: 500, name: 'last_name', type: "varchar" })
+  @Column({ length: 500, name: 'last_name', type: 'varchar' })
   lastName: string;
 
-  @Column({ type: "date"})
+  @Column({ type: 'date' })
   dob: Date;
 
-  @Column({ type: "varchar"})
+  @Column({ type: 'varchar' })
   password: string;
 
-  @Column({ name: 'gender', enum: UserGender , type: "varchar"})
+  @Column({ name: 'gender', enum: UserGender, type: 'varchar' })
   gender: UserGender;
 
-  @Column({ type: "varchar"})
+  @Column({ type: 'varchar' })
   class: string;
 
-  @Column({ type: "varchar"})
+  @Column({ type: 'varchar' })
   major: string;
 
-  @Column({ type: "int2"})
+  @Column({ type: 'int2' })
   startYear: number;
 
-  @Column({ type: "varchar", nullable: true})
+  @Column({ type: 'varchar', nullable: true })
   avatar: string | null;
 
-  @Column({ type: "jsonb", default: []})
+  @Column({ type: 'jsonb', default: [] })
   images: string[];
 
-  @Column({ type: "bool", default: false})
+  @Column({ type: 'bool', default: false })
   validate: false;
 
-  @Column({ type: "timestamptz", nullable: true})
+  @Column({ type: 'timestamptz', nullable: true })
   validateAt: Date | null;
 
   @BeforeInsert()
@@ -63,18 +63,31 @@ export class Student {
   }
 
   @Column({
-    type: "uuid",
-    nullable: true
+    type: 'uuid',
+    nullable: true,
   })
   validateBy: string | null;
 
-  @Column({type: "bool", default: true})
+  @Column({ type: 'bool', default: true })
   enable: boolean;
 
+  @Column({ type: 'jsonb', default: {} })
+  moreInfo: {
+    token: string;
+    refreshToken: string;
+    forgetPasswordToken: string;
+  };
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @BeforeInsert()
+  @BeforeUpdate()
+  hashPassword() {
+    if (this.password) {
+      this.password = bcrypt.hashSync(this.password, process.env.BCRYPT_SALT);
+    }
+  }
 }

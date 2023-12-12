@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { loadEntityManager } from 'src/common/helpers/loadEntityManager.helper';
-import { CreateStudentDto, UpdateUserDto } from './dto/user.dto';
+import { CreateStudentDto } from './dto/student.dto';
 import { Student as StudentEntity } from './entities/student.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from 'typeorm';
