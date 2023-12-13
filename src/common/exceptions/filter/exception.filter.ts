@@ -8,7 +8,7 @@ import {
 
 interface IError {
   message: string;
-  code_error: string;
+  errorCode: string;
 }
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -19,18 +19,18 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const status =
       exception instanceof HttpException
-        ? exception.getStatus()
+        ? 200
         : HttpStatus.INTERNAL_SERVER_ERROR;
     const message =
       exception instanceof HttpException
         ? (exception.getResponse() as IError)
-        : { message: (exception as Error).message, code_error: null };
+        : { message: (exception as Error).message, errorCode: null };
+
     const responseData = {
-      status: false,
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
+      status: 'error',
       ...message,
+      path: request.url,
+      timestamp: new Date().toISOString(),
     };
 
     response.status(status).json(responseData);

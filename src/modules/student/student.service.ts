@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { loadEntityManager } from 'src/common/helpers/loadEntityManager.helper';
-import { CreateStudentDto } from './dto/student.dto';
+import { CreateStudentDto } from './dtos/student.dto';
 import { Student } from './entities/student.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -15,6 +15,8 @@ import {
   Repository,
 } from 'typeorm';
 import { NullableType } from 'src/common/types/nullable.type';
+import { ExceptionFactory } from 'src/common/exceptions/exceptionsFactory';
+import { PostgresErrorCode } from 'src/common/enums/postgresErrorCode.enum';
 
 @Injectable()
 export class StudentService {
@@ -25,10 +27,36 @@ export class StudentService {
   ) {}
 
   async create(createUserDto: CreateStudentDto) {
-    return this.studentRepository.save(
-      this.studentRepository.create(createUserDto),
-    );
+    try {
+      return this.studentRepository.save(
+        this.studentRepository.create(createUserDto),
+      );
+    } catch (error) {
+      if ((error.code = PostgresErrorCode.UniqueViolation)) {
+        throw ExceptionFactory.badRequestException({
+          message: `Student with id=${createUserDto.mssv} already exist.`,
+          errorCode: 1,
+        });
+      }
+      throw error;
+    }
   }
+
+  // async findAll(systemId: string): Promise<Student[]> {
+  //   let listUser: any = [];
+
+  //   const entityManager = await loadEntityManager(systemId, this.moduleRef);
+  //   if (!entityManager) {
+  //     throw new InternalServerErrorException();
+  //   }
+  //   listUser = await entityManager.getRepository(Student).find();
+
+  //   if (!listUser.length) {
+  //     throw new NotFoundException();
+  //   }
+
+  //   return listUser;
+  // }
 
   async findAll(systemId: string): Promise<Student[]> {
     let listUser: any = [];
@@ -46,10 +74,13 @@ export class StudentService {
     return listUser;
   }
 
-  async findOne(
-    where: FindOptionsWhere<Student>,
-    fields?: FindOptionsSelect<Student>,
-  ): Promise<NullableType<Student>> {
+  async findOne({
+    where,
+    fields,
+  }: {
+    where: FindOptionsWhere<Student>;
+    fields?: FindOptionsSelect<Student>;
+  }): Promise<NullableType<Student>> {
     return this.studentRepository.findOne({
       where: where,
       select: fields,

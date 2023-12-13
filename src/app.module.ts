@@ -1,5 +1,5 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppService } from './app.service';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { AuthModule } from './modules/app/auth/auth.module';
@@ -8,23 +8,26 @@ import { PositionAdminModule } from './modules/manage/positionAdmin/positionAdmi
 import { StudentModule } from './modules/student/student.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { AllExceptionFilter } from './common/exceptions/filter/exception.filter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),
+        NODE_ENV: Joi.string()
+          .valid('development', 'test', 'production')
+          .required(),
         PORT: Joi.number().required(),
-        DB_POSTGRES_HOST:Joi.string().required(),
-        DB_POSTGRES_PORT:Joi.string().required(),
-        DB_POSTGRES_USERNAME:Joi.string().required(),
-        DB_POSTGRES_PASSWORD:Joi.string().required(),
-        DB_POSTGRES_DATABASE:Joi.string().required(),
-        DB_POSTGRES_SYNCHRONIZE:Joi.string().required(),
-        BCRYPT_SALT:Joi.string().required(),
-        API_PREFIX:Joi.string().required(),
-        TOKEN:Joi.string().required(),
-      })
+        DB_POSTGRES_HOST: Joi.string().required(),
+        DB_POSTGRES_PORT: Joi.string().required(),
+        DB_POSTGRES_USERNAME: Joi.string().required(),
+        DB_POSTGRES_PASSWORD: Joi.string().required(),
+        DB_POSTGRES_DATABASE: Joi.string().required(),
+        DB_POSTGRES_SYNCHRONIZE: Joi.string().required(),
+        BCRYPT_SALT: Joi.string().required(),
+        API_PREFIX: Joi.string().required(),
+        TOKEN: Joi.string().required(),
+      }),
     }),
     DatabaseModule,
     AuthModule,
@@ -39,6 +42,10 @@ import * as Joi from 'joi';
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionFilter,
+    }
   ],
 })
 export class AppModule {}
