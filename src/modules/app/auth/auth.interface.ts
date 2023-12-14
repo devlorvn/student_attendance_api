@@ -1,7 +1,7 @@
-import { Student } from 'src/modules/student/entities/student.entity';
+import { Student } from "src/modules/student/entities/student.entity";
 
 export interface ITokenPayload {
-  mssv: Student['mssv'];
+  mssv: Student["mssv"];
   createdAt: Date;
   expireIn: Date;
 }

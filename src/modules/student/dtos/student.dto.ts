@@ -1,15 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import {
-  IsDateString,
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsNumberString,
-  IsString,
-  Min,
-} from 'class-validator';
-import { UserGender } from 'src/common/enums/userType.enum';
+import { PartialType } from "@nestjs/mapped-types";
+import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsString, Min } from "class-validator";
+import { UserGender } from "src/common/enums/userType.enum";
 
 export class CreateStudentDto {
   @IsNotEmpty()

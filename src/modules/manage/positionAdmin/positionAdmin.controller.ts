@@ -1,19 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import PositionAdminService from './positionAdmin.service';
-import {
-  CreatePositionAdminDto,
-  UpdatePositionAdminDto,
-} from './dtos/positionAdmin.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import PositionAdminService from "./positionAdmin.service";
+import { CreatePositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
 
-@Controller('positions')
+@Controller("positions")
 export default class PositionAdminController {
   constructor(private readonly positionAdminService: PositionAdminService) {}
 
@@ -22,8 +11,8 @@ export default class PositionAdminController {
     return this.positionAdminService.getAllPositionAdmin();
   }
 
-  @Get(':id')
-  getPositionAdminById(@Param('id') id: string) {
+  @Get(":id")
+  getPositionAdminById(@Param("id") id: string) {
     return this.positionAdminService.getPositionAdminById(id);
   }
 
@@ -32,13 +21,13 @@ export default class PositionAdminController {
     return this.positionAdminService.createPositionAdmin(position);
   }
 
-  @Put(':id')
+  @Put(":id")
   updatePositionAdmin(@Body() position: UpdatePositionAdminDto) {
     return this.positionAdminService.updatePositionAdmin(position);
   }
 
-  @Delete(':id')
-  deletePositionAdmin(@Param('id') id: string) {
+  @Delete(":id")
+  deletePositionAdmin(@Param("id") id: string) {
     return this.positionAdminService.deletePositionAdmin(id);
   }
 }

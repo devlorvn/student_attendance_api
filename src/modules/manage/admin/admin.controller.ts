@@ -1,21 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import AdminService from './admin.service';
-import { CreateAdminDto, UpdateAdminDto } from './dto/admin.dto';
-import PositionAdminService from '../positionAdmin/positionAdmin.service';
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import AdminService from "./admin.service";
+import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
+import PositionAdminService from "../positionAdmin/positionAdmin.service";
 
-@Controller('admin')
+@Controller("admin")
 export default class AdminController {
   constructor(
     private readonly adminService: AdminService,
-    private readonly adminPositionService: PositionAdminService,
+    private readonly adminPositionService: PositionAdminService
   ) {}
 
   @Get()
@@ -23,8 +15,8 @@ export default class AdminController {
     return this.adminService.getAllAdmin();
   }
 
-  @Get(':id')
-  getAdminById(@Param('id') id: string) {
+  @Get(":id")
+  getAdminById(@Param("id") id: string) {
     return this.adminService.getAdminById(id);
   }
 
@@ -34,15 +26,14 @@ export default class AdminController {
     return this.adminService.createAdmin(admin);
   }
 
-  @Put(':id')
+  @Put(":id")
   updateAdmin(@Body() admin: UpdateAdminDto) {
-    if (admin.positionId)
-      this.adminPositionService.existPositionAdmin(admin.positionId);
+    if (admin.positionId) this.adminPositionService.existPositionAdmin(admin.positionId);
     return this.adminService.updateAdmin(admin);
   }
 
-  @Delete(':id')
-  deleteAdmin(@Param('id') id: string) {
+  @Delete(":id")
+  deleteAdmin(@Param("id") id: string) {
     return this.adminService.deleteAdmin(id);
   }
 }

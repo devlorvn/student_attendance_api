@@ -1,14 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import Admin from './entities/admin.entity';
-import { Repository } from 'typeorm';
-import { CreateAdminDto, UpdateAdminDto } from './dto/admin.dto';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import Admin from "./entities/admin.entity";
+import { Repository } from "typeorm";
+import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 
 @Injectable()
 export default class AdminService {
   constructor(
     @InjectRepository(Admin)
-    private adminRepository: Repository<Admin>,
+    private adminRepository: Repository<Admin>
   ) {}
 
   // CREATE
@@ -33,7 +33,7 @@ export default class AdminService {
   // GET BY ID
   async getAdminById(id: string) {
     const user = await this.adminRepository.findOne({ where: { id } });
-    if (!user) throw new HttpException('Admin not found', HttpStatus.NOT_FOUND);
+    if (!user) throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
 
     return user;
   }
@@ -42,7 +42,7 @@ export default class AdminService {
   async deleteAdmin(id: string) {
     const result = await this.adminRepository.delete(id);
     if (!result.affected) {
-      throw new HttpException('Admin not found', HttpStatus.NOT_FOUND);
+      throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
     }
   }
 }

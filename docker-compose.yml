@@ -1,11 +1,11 @@
-version: '3'
+version: "3"
 services:
   mysql-service:
     container_name: demo-sql
     image: mysql:latest
     environment:
       MYSQL_USER: mysql
-      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_HOST: "%"
       MYSQL_ROOT_PASSWORD: 123456a@
       MYSQL_DATABASE: demo-user
     ports:
@@ -17,7 +17,7 @@ services:
     container_name: demo-mongo
     image: mongo:5.0-focal
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - /mongodbdata:/data/db
     environment:

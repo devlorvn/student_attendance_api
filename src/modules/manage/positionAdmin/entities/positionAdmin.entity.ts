@@ -1,17 +1,11 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-@Entity('position_admin')
+@Entity("position_admin")
 export default class PositionAdmin {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id?: string;
 
-  @Column({ length: 255, name: 'name', type: 'varchar' })
+  @Column({ length: 255, name: "name", type: "varchar" })
   name: string;
 
   @CreateDateColumn()

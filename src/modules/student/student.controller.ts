@@ -1,16 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
-import { ExceptionFactory } from 'src/common/exceptions/exceptionsFactory';
+import { Controller, Get } from "@nestjs/common";
+import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 
-@Controller('student')
+@Controller("student")
 export class StudentController {
-    constructor(
-    ) {}
+  constructor() {}
 
-    @Get('/test')
-    async test() {
-        throw ExceptionFactory.badRequestException({
-            message: "aksksks",
-            errorCode: 1
-        })
-    }
+  @Get("/test")
+  async test() {
+    throw ExceptionFactory.badRequestException({
+      message: "aksksks",
+      errorCode: 1,
+    });
+  }
 }

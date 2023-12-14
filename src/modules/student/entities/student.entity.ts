@@ -1,56 +1,48 @@
-import { UserGender } from 'src/common/enums/userType.enum';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import bcrypt from 'bcryptjs';
+import { UserGender } from "src/common/enums/userType.enum";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import bcrypt from "bcryptjs";
 
-@Entity('student')
+@Entity("student")
 export class Student {
   @PrimaryGeneratedColumn({
-    type: 'int4',
+    type: "int4",
   })
   mssv: number;
 
-  @Column({ length: 500, name: 'first_name', type: 'varchar' })
+  @Column({ length: 500, name: "first_name", type: "varchar" })
   firstName: string;
 
-  @Column({ length: 500, name: 'last_name', type: 'varchar' })
+  @Column({ length: 500, name: "last_name", type: "varchar" })
   lastName: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: "date" })
   dob: Date;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   password: string;
 
-  @Column({ name: 'gender', enum: UserGender, type: 'varchar' })
+  @Column({ name: "gender", enum: UserGender, type: "varchar" })
   gender: UserGender;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   class: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   major: string;
 
-  @Column({ type: 'int2' })
+  @Column({ type: "int2" })
   startYear: number;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: "varchar", nullable: true })
   avatar: string | null;
 
-  @Column({ type: 'jsonb', default: [] })
+  @Column({ type: "jsonb", default: [] })
   images: string[];
 
-  @Column({ type: 'bool', default: false })
+  @Column({ type: "bool", default: false })
   validate: false;
 
-  @Column({ type: 'timestamptz', nullable: true })
+  @Column({ type: "timestamptz", nullable: true })
   validateAt: Date | null;
 
   @BeforeInsert()
@@ -63,15 +55,15 @@ export class Student {
   }
 
   @Column({
-    type: 'uuid',
+    type: "uuid",
     nullable: true,
   })
   validateBy: string | null;
 
-  @Column({ type: 'bool', default: true })
+  @Column({ type: "bool", default: true })
   enable: boolean;
 
-  @Column({ type: 'jsonb', default: {} })
+  @Column({ type: "jsonb", default: {} })
   moreInfo: {
     token: string;
     refreshToken: string;
