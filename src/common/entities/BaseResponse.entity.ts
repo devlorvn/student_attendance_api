@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class BasResponseEntity{
+export class BasResponseEntity {
   @ApiProperty({
     type: String,
     example: "ok",

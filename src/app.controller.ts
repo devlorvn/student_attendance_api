@@ -3,7 +3,7 @@ import { Controller, Get } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { BasResponseEntity } from "./common/entities/BaseResponse.entity";
 
-export class HealthCheck extends BasResponseEntity{
+export class HealthCheck extends BasResponseEntity {
   @ApiProperty({
     type: String,
     example: "Success",

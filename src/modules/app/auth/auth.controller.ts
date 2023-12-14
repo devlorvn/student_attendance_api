@@ -18,10 +18,10 @@ export class AuthController {
     return this.authService.login(req.user.mssv);
   }
 
-  @Post('register')
+  @Post("register")
   @ApiOkResponse({
     description: "Đăng kí tài khoản mới",
-    type: RegisterExample
+    type: RegisterExample,
   })
   async register(@Body() data: CreateStudentDto) {
     return this.authService.register(data);
