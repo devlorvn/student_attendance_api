@@ -1,11 +1,8 @@
-import { ModuleRef } from '@nestjs/core';
-import { getEntityManagerToken } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
+import { ModuleRef } from "@nestjs/core";
+import { getEntityManagerToken } from "@nestjs/typeorm";
+import { EntityManager } from "typeorm";
 
-export const loadEntityManager = async (
-  systemId: string,
-  moduleRef: ModuleRef,
-): Promise<EntityManager> => {
+export const loadEntityManager = async (systemId: string, moduleRef: ModuleRef): Promise<EntityManager> => {
   return await moduleRef.get(getEntityManagerToken(`database-${systemId}`), {
     strict: false,
   });

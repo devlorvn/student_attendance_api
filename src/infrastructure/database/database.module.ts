@@ -1,17 +1,28 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import ormConfig, { getDatabaseSystemIds } from '../config/orm.config';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
-const databasesConfig = getDatabaseSystemIds().map((systemId) => {
-  return TypeOrmModule.forRootAsync({
-    name: `database-${systemId}`,
-    imports: [ConfigModule.forFeature(ormConfig)],
-    useFactory: (config: ConfigService) => config.get(`orm.${systemId}`),
-    inject: [ConfigService],
-  });
-});
 @Module({
-  imports: [...databasesConfig],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: "postgres",
+        host: config.get(`DB_POSTGRES_HOST`),
+        port: parseInt(config.get(`DB_POSTGRES_PORT`)),
+        username: config.get(`DB_POSTGRES_USERNAME`),
+        password: config.get(`DB_POSTGRES_PASSWORD`),
+        database: config.get(`DB_POSTGRES_DATABASE`),
+        synchronize: config.get(`DB_POSTGRES_SYNCHRONIZE`) === "true",
+        entities: [`${__dirname}/../../**/*.entity.{ts,js}`],
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
+      }),
+    }),
+  ],
 })
 export class DatabaseModule {}
