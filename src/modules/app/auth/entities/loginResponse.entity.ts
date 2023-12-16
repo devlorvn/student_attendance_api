@@ -1,14 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BaseResponseEntity } from "src/common/entities/BaseResponse.entity";
 
-export class RegisterExample extends BaseResponseEntity {
+export class LoginExample extends BaseResponseEntity {
   @ApiProperty({
     type: Object,
     example: {
-      id: "abcxyz",
+      token: "abc",
+      refreshToken: "xyz",
     },
   })
   data: {
-    mssv: string;
+    token: string;
+    refreshToken: string;
   };
 }

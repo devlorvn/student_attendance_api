@@ -1,11 +1,11 @@
 import { JwtService } from "@nestjs/jwt";
-import bcryptjs from "bcryptjs";
+import * as bcryptjs from "bcryptjs";
 import { Injectable } from "@nestjs/common";
 import { CreateStudentDto } from "src/modules/student/dtos/student.dto";
 import { Student } from "src/modules/student/entities/student.entity";
 import { StudentService } from "src/modules/student/student.service";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 import { IRefreshTokenPayload, ITokenPayload } from "src/modules/app/auth/auth.interface";
 import { ConfigService } from "@nestjs/config";
 
@@ -18,11 +18,10 @@ export class AuthService {
   ) {}
 
   public async register(registrationData: CreateStudentDto) {
-    await this.studentService.create(registrationData);
+    const { mssv } = await this.studentService.create(registrationData);
 
     return {
-      message: "success",
-      errorCode: 0,
+      mssv,
     };
   }
 
@@ -33,9 +32,9 @@ export class AuthService {
       },
     });
 
-    if (!user || bcryptjs.compareSync(password, user.password)) {
+    if (!user || !bcryptjs.compareSync(password, user.password)) {
       throw ExceptionFactory.badRequestException({
-        message: "Wrong credentials.",
+        message: "Tài khoản hoặc mật khẩu không chính xác.",
         errorCode: -1,
       });
     }
@@ -55,7 +54,14 @@ export class AuthService {
     const refreshToken: string = this.generateRefreshToken({
       token,
       createdAt: new Date(),
-      expireIn: dayjs().add(1, "day").toDate(),
+      expireIn: dayjs().add(7, "day").toDate(),
+    });
+
+    await this.studentService.update(mssv, {
+      moreInfo: {
+        token: bcryptjs.hashSync(token),
+        refreshToken: bcryptjs.hashSync(refreshToken),
+      },
     });
 
     return {

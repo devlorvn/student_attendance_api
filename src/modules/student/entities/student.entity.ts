@@ -1,10 +1,10 @@
 import { UserGender } from "src/common/enums/userType.enum";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import bcrypt from "bcryptjs";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import * as bcrypt from "bcryptjs";
 
 @Entity("student")
 export class Student {
-  @PrimaryGeneratedColumn({
+  @PrimaryColumn({
     type: "int4",
   })
   mssv: number;
@@ -45,15 +45,6 @@ export class Student {
   @Column({ type: "timestamptz", nullable: true })
   validateAt: Date | null;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async setPassword() {
-    if (this.password) {
-      const salt = await bcrypt.genSalt();
-      this.password = await bcrypt.hash(this.password, salt);
-    }
-  }
-
   @Column({
     type: "uuid",
     nullable: true,
@@ -79,7 +70,7 @@ export class Student {
   @BeforeUpdate()
   hashPassword() {
     if (this.password) {
-      this.password = bcrypt.hashSync(this.password, process.env.BCRYPT_SALT);
+      this.password = bcrypt.hashSync(this.password);
     }
   }
 }
