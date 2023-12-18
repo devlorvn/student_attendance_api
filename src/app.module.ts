@@ -10,6 +10,7 @@ import { ConfigModule } from "@nestjs/config";
 import * as Joi from "joi";
 import { AllExceptionFilter } from "./common/exceptions/filter/exception.filter";
 import { AppController } from "./app.controller";
+import { ProfileModule } from './modules/app/profile/profile.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AppController } from "./app.controller";
     AdminModule,
     PositionAdminModule,
     StudentModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [
