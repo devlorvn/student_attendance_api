@@ -3,5 +3,11 @@ export enum ErrorCode {
 }
 
 export enum StudentErrorCode {
-  NOT_FOUND = 11,
+  NOT_FOUND = 1,
+}
+
+export enum AdminErrorCode {
+  EXIST_EMAIL = 101,
+  LOGIN_FAILED = 102,
+  INVALID_POSITION = 103,
 }

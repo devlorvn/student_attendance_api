@@ -70,11 +70,11 @@ export class StudentService {
     });
   }
 
-  async update(mssv: Student["mssv"], payload: DeepPartial<Student>) {
+  async update(mssv: Student["mssv"], payload: DeepPartial<Student>): Promise<Student> {
     return this.studentRepository.save({ mssv: mssv, ...payload });
   }
 
-  async enable(mssv: Student["mssv"]) {
+  async enable(mssv: Student["mssv"]): Promise<Boolean> {
     await this.studentRepository.save({ mssv: mssv, enable: false });
     return true;
   }

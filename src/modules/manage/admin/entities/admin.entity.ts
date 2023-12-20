@@ -1,5 +1,5 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import PositionAdmin from "../../positionAdmin/entities/positionAdmin.entity";
 
 @Entity("admin")
@@ -16,8 +16,6 @@ export default class Admin {
   @Column({ length: 255, name: "password", type: "varchar" })
   password: string;
 
-  //   @Column({ name: 'positionId', type: 'uuid' })
-  //   positionId: string;
   @OneToOne(() => PositionAdmin, (position: PositionAdmin) => position.id)
   positionId: string;
 
@@ -27,8 +25,12 @@ export default class Admin {
   @Column({ type: "bool", default: true })
   enable: boolean;
 
-  @Column({ type: "jsonb", nullable: true })
-  more_info: string[] | null;
+  @Column({ type: "jsonb", default: {} })
+  more_info: {
+    token: string;
+    refreshToken: string;
+    forgetPasswordToken: string;
+  };
 
   @CreateDateColumn()
   createdAt: Date;
@@ -38,10 +40,9 @@ export default class Admin {
 
   @BeforeInsert()
   @BeforeUpdate()
-  async setPassword() {
+  hashPassword() {
     if (this.password) {
-      const salt = await bcrypt.genSalt();
-      this.password = await bcrypt.hash(this.password, salt);
+      this.password = bcrypt.hashSync(this.password);
     }
   }
 }

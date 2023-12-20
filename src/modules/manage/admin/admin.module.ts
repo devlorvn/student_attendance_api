@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import Admin from "./entities/admin.entity";
-import AdminController from "./admin.controller";
+import AdminController from "./controllers/admin.controller";
 import AdminService from "./admin.service";
 import { PositionAdminModule } from "../positionAdmin/positionAdmin.module";
 import PositionAdminService from "../positionAdmin/positionAdmin.service";
