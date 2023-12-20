@@ -1,19 +1,18 @@
 import { RequestWithAdmin } from "./authAdmin.interface";
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
-import { LocalAuthGuard } from "src/common/guards/local.guard";
+import { Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { RegisterAdminResponse } from "./entities/registerResponse.entity";
 import { LoginAdminResponse } from "./entities/loginResponse.entity";
 import { LoginAdminDto } from "./dtos/loginAdmin.dto";
 import { AuthService } from "./authAdmin.service";
-import { CreateAdminDto } from "../admin/dto/admin.dto";
+import { AdminAuthGuard } from "src/common/guards/admin.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("admin/auth")
 @ApiTags("Admin Auth API")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AuthGuard('admin'))
   @Post("login")
   @ApiOkResponse({
     type: LoginAdminResponse,
@@ -23,19 +22,6 @@ export class AuthController {
     type: LoginAdminDto,
   })
   async login(@Req() req: RequestWithAdmin) {
-    return this.authService.login(req.admin.email);
+    return this.authService.login(req.user.email);
   }
-
-  // @Post("register")
-  // @ApiOkResponse({
-  //   description: "Đăng kí quản trị viên mới",
-  //   type: RegisterAdminResponse,
-  // })
-  // @HttpCode(HttpStatus.OK)
-  // @ApiBody({
-  //   type: CreateAdminDto,
-  // })
-  // async register(@Body() data: CreateAdminDto) {
-  //   return this.authService.register(data);
-  // }
 }

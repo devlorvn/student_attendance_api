@@ -1,7 +1,7 @@
 import { RequestWithUser } from "./auth.interface";
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "src/modules/app/auth/auth.service";
-import { LocalAuthGuard } from "src/common/guards/local.guard";
+import { AppAuthGuard } from "src/common/guards/app.guard";
 import { CreateStudentDto } from "src/modules/student/dtos/student.dto";
 import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { RegisterExample } from "./entities/registerResponse.entity";
@@ -13,7 +13,7 @@ import { LoginDto } from "./dtos/login.dto";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AppAuthGuard)
   @Post("login")
   @ApiOkResponse({
     type: LoginExample,

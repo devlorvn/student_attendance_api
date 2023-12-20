@@ -13,5 +13,5 @@ export interface IRefreshTokenPayload {
 }
 
 export interface RequestWithAdmin extends Request {
-  admin: Admin;
+  user: Admin;
 }
