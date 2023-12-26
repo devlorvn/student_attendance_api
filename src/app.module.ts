@@ -3,6 +3,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { AppService } from "./app.service";
 import { DatabaseModule } from "./infrastructure/database/database.module";
 import { AuthModule } from "./modules/app/auth/auth.module";
+import { AuthAdminModule } from "./modules/manage/auth/authAdmin.module";
 import { AdminModule } from "./modules/manage/admin/admin.module";
 import { PositionAdminModule } from "./modules/manage/positionAdmin/positionAdmin.module";
 import { StudentModule } from "./modules/student/student.module";
@@ -27,12 +28,14 @@ import { ProfileModule } from './modules/app/profile/profile.module';
         BCRYPT_SALT: Joi.string().required(),
         API_PREFIX: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
         JWT_TOKEN_EXPIRE_TIME: Joi.string().required(),
         JWT_REFRESH_TOKEN_EXPIRE_TIME: Joi.string().required(),
       }),
     }),
     DatabaseModule,
     AuthModule,
+    AuthAdminModule,
     AdminModule,
     PositionAdminModule,
     StudentModule,

@@ -7,7 +7,7 @@ export interface ITokenPayload {
 }
 
 export interface IRefreshTokenPayload {
-  token: string;
+  mssv: Student["mssv"];
   createdAt: Date;
   expireIn: Date;
 }
