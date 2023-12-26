@@ -31,22 +31,6 @@ export class StudentService {
     }
   }
 
-  // async findAll(systemId: string): Promise<Student[]> {
-  //   let listUser: any = [];
-
-  //   const entityManager = await loadEntityManager(systemId, this.moduleRef);
-  //   if (!entityManager) {
-  //     throw new InternalServerErrorException();
-  //   }
-  //   listUser = await entityManager.getRepository(Student).find();
-
-  //   if (!listUser.length) {
-  //     throw new NotFoundException();
-  //   }
-
-  //   return listUser;
-  // }
-
   async findAll(systemId: string): Promise<Student[]> {
     let listUser: any = [];
 
@@ -70,8 +54,12 @@ export class StudentService {
     });
   }
 
-  async update(mssv: Student["mssv"], payload: DeepPartial<Student>): Promise<Student> {
-    return this.studentRepository.save({ mssv: mssv, ...payload });
+  async updateById(mssv: Student["mssv"], payload: DeepPartial<Student>): Promise<Student> {
+    return await this.studentRepository.save({ mssv, ...payload });
+  }
+
+  async update(user: Student, payload: DeepPartial<Student>): Promise<Student> {
+    return await this.studentRepository.save(Object.assign(user, payload));
   }
 
   async enable(mssv: Student["mssv"]): Promise<Boolean> {

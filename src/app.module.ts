@@ -27,6 +27,7 @@ import { AppController } from "./app.controller";
         BCRYPT_SALT: Joi.string().required(),
         API_PREFIX: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
         JWT_TOKEN_EXPIRE_TIME: Joi.string().required(),
         JWT_REFRESH_TOKEN_EXPIRE_TIME: Joi.string().required(),
       }),

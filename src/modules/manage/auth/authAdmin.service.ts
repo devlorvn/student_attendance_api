@@ -2,13 +2,13 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcryptjs from "bcryptjs";
 import { Injectable } from "@nestjs/common";
 import * as dayjs from "dayjs";
-import { IRefreshTokenPayload, ITokenPayload } from "src/modules/manage/auth/authAdmin.interface";
+import { ITokenPayload } from "src/modules/manage/auth/authAdmin.interface";
 import { ConfigService } from "@nestjs/config";
 import Admin from "../admin/entities/admin.entity";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import AdminService from "../admin/admin.service";
-import { CreateAdminDto } from "../admin/dto/admin.dto";
 import { AdminErrorCode } from "src/common/enums";
+import { UpdatePasswordAdminDto } from "../admin/dto/admin.dto";
 
 @Injectable()
 export class AuthService {
@@ -17,13 +17,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService
   ) {}
-
-  // public async register(registrationData: CreateAdminDto) {
-  //   const { email } = await this.adminService.createAdmin(registrationData);
-  //   return {
-  //     email,
-  //   };
-  // }
 
   public async validateAdmin(email: string, password: string): Promise<Admin> {
     const admin: Admin | null = await this.adminService.findOne({
@@ -35,7 +28,7 @@ export class AuthService {
     if (!admin || !bcryptjs.compareSync(password, admin.password)) {
       throw ExceptionFactory.badRequestException({
         message: "Tài khoản hoặc mật khẩu không chính xác.",
-        errorCode: AdminErrorCode.LOGIN_FAILED,
+        errorCode: AdminErrorCode.VALIDATE_FAILED,
       });
     }
 
@@ -44,41 +37,52 @@ export class AuthService {
     return admin;
   }
 
-  public async login(email: Admin["email"]) {
+  public async login(id: Admin["id"]) {
     const token: string = this.generateToken({
-      email,
+      id,
       createdAt: new Date(),
       expireIn: dayjs().add(1, "day").toDate(),
     });
-
-    const refreshToken: string = this.generateRefreshToken({
-      token,
-      createdAt: new Date(),
-      expireIn: dayjs().add(7, "day").toDate(),
-    });
-
-    await this.adminService.updateAdmin(email, {
+    await this.adminService.updateById(id, {
       more_info: {
         token: bcryptjs.hashSync(token),
-        refreshToken: bcryptjs.hashSync(refreshToken),
       },
     });
 
     return {
       token,
-      refreshToken,
     };
+  }
+
+  public async changePassword(admin: Admin, changePasswordData: UpdatePasswordAdminDto) {
+    if (!this.compare(changePasswordData.oldPassword, admin.password)) {
+      throw ExceptionFactory.badRequestException({
+        message: "Tài khoản hoặc mật khẩu không chính xác.",
+        errorCode: AdminErrorCode.VALIDATE_FAILED,
+      });
+    }
+
+    await this.adminService.update(admin, { password: changePasswordData.newPassord });
+  }
+
+  public async logout(id: Admin["id"]): Promise<void> {
+    await this.adminService.updateById(id, { more_info: {} });
+  }
+
+  /**
+   * Compare text and hash text using bcrypt
+   * @param plainText
+   * @param hashText
+   * @returns Boolean
+   */
+  private compare(plainText: string, hashText: string) {
+    return bcryptjs.compareSync(plainText, hashText);
   }
 
   private generateToken(payload: ITokenPayload) {
     return this.jwtService.sign(payload, {
       expiresIn: this.configService.get("JWT_TOKEN_EXPIRE_TIME"),
-    });
-  }
-
-  private generateRefreshToken(payload: IRefreshTokenPayload) {
-    return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get("JWT_REFRESH_TOKEN_EXPIRE_TIME"),
+      secret: this.configService.get("JWT_SECRET"),
     });
   }
 }

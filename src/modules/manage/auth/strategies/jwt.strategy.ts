@@ -8,7 +8,7 @@ import AdminService from "../../admin/admin.service";
 import { ITokenPayload } from "../authAdmin.interface";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
   constructor(
     private readonly configService: ConfigService,
     private readonly adminService: AdminService
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: ITokenPayload) {
-    const admin: Admin | null = await this.adminService.getAdminByEmail(payload.email);
+    const admin: Admin | null = await this.adminService.findOneById(payload.id);
     if (!admin) {
       throw ExceptionFactory.unauthorizedException({
         message: "Wrong token",

@@ -1,6 +1,7 @@
 import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import PositionAdmin from "../../positionAdmin/entities/positionAdmin.entity";
+import { Exclude } from "class-transformer";
 
 @Entity("admin")
 export default class Admin {

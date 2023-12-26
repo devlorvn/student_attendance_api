@@ -14,26 +14,26 @@ export default class PositionAdminService {
   ) {}
 
   // CREATE
-  async createPositionAdmin(createPositionDto: CreatePositionAdminDto) {
+  async create(createPositionDto: CreatePositionAdminDto) {
     const newPosition = this.positionAdminRepository.create(createPositionDto);
     await this.positionAdminRepository.save(newPosition);
     return newPosition;
   }
 
   // UPDATE
-  async updatePositionAdmin(updatePositionDto: UpdatePositionAdminDto) {
+  async update(updatePositionDto: UpdatePositionAdminDto) {
     const { id, ...updateData } = updatePositionDto;
     await this.positionAdminRepository.update(id, updateData);
   }
 
   // GET ALL
-  async getAllPositionAdmin() {
+  async findAll() {
     const positions = await this.positionAdminRepository.find();
     return positions;
   }
 
   // GET BY ID
-  async getPositionAdminById(id: string) {
+  async findById(id: PositionAdmin["id"]) {
     const position = await this.positionAdminRepository.findOne({
       where: { id },
     });
@@ -47,7 +47,7 @@ export default class PositionAdminService {
   }
 
   // DELETE
-  async deletePositionAdmin(id: string) {
+  async delete(id: PositionAdmin["id"]) {
     const result = await this.positionAdminRepository.delete(id);
     if (!result.affected) {
       throw ExceptionFactory.notFoundException({
@@ -58,7 +58,7 @@ export default class PositionAdminService {
   }
 
   // CHECK IF EXIST ID
-  async existPositionAdmin(id: string) {
+  async exist(id: PositionAdmin["id"]) {
     const exist = await this.positionAdminRepository.exist({ where: { id } });
     if (!exist) {
       throw ExceptionFactory.notFoundException({

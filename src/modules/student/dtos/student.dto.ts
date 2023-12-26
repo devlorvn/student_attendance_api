@@ -1,6 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsString, Min } from "class-validator";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsString, Min, MinLength } from "class-validator";
 import { UserGender } from "src/common/enums/userType.enum";
 
 export class CreateStudentDto {
@@ -34,7 +34,7 @@ export class CreateStudentDto {
   })
   @IsNotEmpty()
   @IsString()
-  @Min(6)
+  @MinLength(6)
   password: string;
 
   @ApiProperty({
@@ -79,9 +79,32 @@ export class CreateStudentDto {
 }
 
 export class UploadedFileDto {
+  @ApiProperty({
+    type: Number,
+    example: 123,
+  })
   @IsNotEmpty()
   @IsNumber()
   id: number;
+}
+
+export class UpdatePasswordStudentDto {
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  oldPassword: string;
+
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  newPassord: string;
 }
 
 export class UpdateUserDto extends PartialType(CreateStudentDto) {}

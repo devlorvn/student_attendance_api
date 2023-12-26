@@ -15,7 +15,7 @@ export default class AdminService {
   ) {}
 
   // CREATE
-  async createAdmin(createAdminDto: CreateAdminDto) {
+  async create(createAdminDto: CreateAdminDto) {
     try {
       const newAdmin = this.adminRepository.create(createAdminDto);
       return await this.adminRepository.save(newAdmin);
@@ -30,28 +30,25 @@ export default class AdminService {
     }
   }
 
-  // UPDATE
-  async updateAdmin(id: Admin["id" | "email"], payload: DeepPartial<Admin>) {
-    return await this.adminRepository.update(id, { ...payload });
+  // UPDATE BY ID
+  async updateById(id: Admin["id"], payload: DeepPartial<Admin>) {
+    return await this.adminRepository.save({ id, ...payload });
+  }
+
+  // UPDATE BY ADMIN OBJECT
+  async update(admin: Admin, payload: DeepPartial<Admin>) {
+    return await this.adminRepository.save(Object.assign(admin, payload));
   }
 
   // GET ALL
-  async getAllAdmin() {
+  async findAll() {
     const admins = await this.adminRepository.find();
     return admins;
   }
 
   // GET BY ID
-  async getAdminById(id: string) {
+  async findOneById(id: Admin["id"]) {
     const user = await this.adminRepository.findOne({ where: { id } });
-    if (!user) throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
-
-    return user;
-  }
-
-  // GET BY EMAIL
-  async getAdminByEmail(email: string) {
-    const user = await this.adminRepository.findOne({ where: { email } });
     if (!user) throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
 
     return user;
@@ -66,7 +63,7 @@ export default class AdminService {
   }
 
   // DELETE
-  async deleteAdmin(id: string) {
+  async delete(id: Admin["id"]) {
     const result = await this.adminRepository.delete(id);
     if (!result.affected) {
       throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);

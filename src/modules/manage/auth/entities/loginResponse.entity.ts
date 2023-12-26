@@ -6,11 +6,9 @@ export class LoginAdminResponse extends BaseResponseEntity {
     type: Object,
     example: {
       token: "abc",
-      refreshToken: "xyz",
     },
   })
   data: {
     token: string;
-    refreshToken: string;
   };
 }

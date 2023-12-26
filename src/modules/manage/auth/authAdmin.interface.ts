@@ -1,13 +1,7 @@
 import Admin from "../admin/entities/admin.entity";
 
 export interface ITokenPayload {
-  email: Admin["email"];
-  createdAt: Date;
-  expireIn: Date;
-}
-
-export interface IRefreshTokenPayload {
-  token: string;
+  id: Admin["id"];
   createdAt: Date;
   expireIn: Date;
 }

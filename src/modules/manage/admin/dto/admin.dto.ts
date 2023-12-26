@@ -95,3 +95,22 @@ export class UpdateAdminDto extends PartialType(CreateAdminDto) {
   @IsOptional()
   moreInfo: any;
 }
+
+export class UpdatePasswordAdminDto {
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  oldPassword: string;
+
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  newPassord: string;
+}
