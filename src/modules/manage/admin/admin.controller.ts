@@ -3,10 +3,10 @@ import AdminService from "./admin.service";
 import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 import PositionAdminService from "../positionAdmin/positionAdmin.service";
 import { ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "@nestjs/passport";
+import { JwtAdminAuthGuard } from "src/common/guards";
 
 @Controller("admin/manage")
-// @UseGuards(AuthGuard("admin"))
+// @UseGuards(JwtAdminAuthGuard)
 @ApiTags("Admin Manage API")
 export default class AdminController {
   constructor(

@@ -21,7 +21,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
   }
 
   async validate(payload: ITokenPayload) {
-    const admin: Admin | null = await this.adminService.findOneById(payload.id);
+    const admin: Admin | null = await this.adminService.findOneById(payload.key);
     if (!admin) {
       throw ExceptionFactory.unauthorizedException({
         message: "Wrong token",

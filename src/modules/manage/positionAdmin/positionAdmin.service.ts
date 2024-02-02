@@ -40,7 +40,6 @@ export default class PositionAdminService {
     if (!position)
       throw ExceptionFactory.notFoundException({
         message: `Position with id: ${id} was not found`,
-        errorCode: AdminErrorCode.INVALID_POSITION,
       });
 
     return position;
@@ -52,7 +51,6 @@ export default class PositionAdminService {
     if (!result.affected) {
       throw ExceptionFactory.notFoundException({
         message: `Position with id: ${id} was not found`,
-        errorCode: AdminErrorCode.INVALID_POSITION,
       });
     }
   }
@@ -63,7 +61,6 @@ export default class PositionAdminService {
     if (!exist) {
       throw ExceptionFactory.notFoundException({
         message: `Position with id: ${id} was not found`,
-        errorCode: AdminErrorCode.INVALID_POSITION,
       });
     }
   }

@@ -8,7 +8,6 @@ import * as cookieParser from "cookie-parser";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  app.use(cookieParser());
   app.setGlobalPrefix(configService.get("API_PREFIX"));
   // app.enableCors({ origin: "http://localhost:3000" });
   app.useGlobalInterceptors(new TransformInterceptor());

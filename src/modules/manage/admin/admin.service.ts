@@ -22,8 +22,8 @@ export default class AdminService {
     } catch (error) {
       if ((error.code = PostgresErrorCode.UniqueViolation)) {
         throw ExceptionFactory.badRequestException({
-          message: `Admin with email=${createAdminDto.email} had already taken.`,
-          errorCode: AdminErrorCode.EXIST_EMAIL,
+          message: `Admin với email=${createAdminDto.email} đã được sử dụng.`,
+          errorCode: -100,
         });
       }
       throw error;
@@ -49,8 +49,10 @@ export default class AdminService {
   // GET BY ID
   async findOneById(id: Admin["id"]) {
     const user = await this.adminRepository.findOne({ where: { id } });
-    if (!user) throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
-
+    if (!user)
+      throw ExceptionFactory.notFoundException({
+        message: "Admin không được tìm thấy",
+      });
     return user;
   }
 
@@ -66,7 +68,9 @@ export default class AdminService {
   async delete(id: Admin["id"]) {
     const result = await this.adminRepository.delete(id);
     if (!result.affected) {
-      throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
+      throw ExceptionFactory.notFoundException({
+        message: "Admin không được tìm thấy",
+      });
     }
   }
 }

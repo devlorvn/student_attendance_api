@@ -1,14 +1,14 @@
 import { RequestWithUser } from "./auth.interface";
 import { Body, Controller, HttpCode, HttpStatus, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "src/modules/app/auth/auth.service";
-import { AppAuthGuard } from "src/common/guards/app.guard";
+import { AppAuthGuard } from "src/common/guards/app/app.guard";
 import { CreateStudentDto, UpdatePasswordStudentDto } from "src/modules/student/dtos/student.dto";
 import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { RegisterStudent } from "./entities/registerResponse.entity";
 import { LoginStudent } from "./entities/loginResponse.entity";
 import { LoginDto } from "./dtos/login.dto";
-import { JwtAdminAuthGuard, JwtAuthGuard, JwtRefreshAuthGuard } from "src/common/guards/jwtAuth.guard";
 import { ResetStudentPassword } from "./dtos/reset.dto";
+import { JwtAdminAuthGuard, JwtAuthGuard, JwtRefreshAuthGuard } from "src/common/guards";
 
 @Controller("app/auth")
 @ApiTags("App api")

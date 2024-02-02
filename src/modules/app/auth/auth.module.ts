@@ -7,8 +7,6 @@ import { AppStrategy } from "src/modules/app/auth/strategies/app.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtRefreshStrategy, JwtStrategy } from "src/modules/app/auth/strategies/jwt.strategy";
-import { JwtAdminAuthGuard } from "src/common/guards/jwtAuth.guard";
-
 @Module({
   imports: [
     StudentModule,
@@ -30,6 +28,6 @@ import { JwtAdminAuthGuard } from "src/common/guards/jwtAuth.guard";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AppStrategy, JwtStrategy, JwtRefreshStrategy, JwtAdminAuthGuard],
+  providers: [AuthService, AppStrategy, JwtStrategy, JwtRefreshStrategy],
 })
 export class AuthModule {}

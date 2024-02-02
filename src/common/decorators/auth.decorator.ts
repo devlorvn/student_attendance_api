@@ -1,6 +1,6 @@
 import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiUnauthorizedResponse } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/common/guards/jwtAuth.guard";
+import { JwtAuthGuard } from "src/common/guards/app/jwtAuth.guard";
 export interface IPermissionScope {
   action: string;
   subject: string;

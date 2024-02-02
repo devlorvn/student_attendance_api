@@ -23,7 +23,7 @@ export class StudentService {
     } catch (error) {
       if ((error.code = PostgresErrorCode.UniqueViolation)) {
         throw ExceptionFactory.badRequestException({
-          message: `Student with id=${createUserDto.mssv} already exist.`,
+          message: `Student với id=${createUserDto.mssv} đã tồn tại.`,
           errorCode: 1,
         });
       }
@@ -31,24 +31,22 @@ export class StudentService {
     }
   }
 
-  async findAll(systemId: string): Promise<Student[]> {
-    let listUser: any = [];
-
-    const entityManager = await loadEntityManager(systemId, this.moduleRef);
-    if (!entityManager) {
-      throw new InternalServerErrorException();
-    }
-    listUser = await entityManager.getRepository(Student).find();
-
-    if (!listUser.length) {
-      throw new NotFoundException();
-    }
-
-    return listUser;
+  async findAll({
+    where,
+    fields,
+    limit = 10,
+    page = 1,
+  }: {
+    where?: FindOptionsWhere<Student>;
+    fields?: FindOptionsSelect<Student>;
+    limit?: number;
+    page?: number;
+  }) {
+    return await this.studentRepository.find({ where: where, select: fields, take: limit, skip: (page - 1) * limit });
   }
 
   async findOne({ where, fields }: { where: FindOptionsWhere<Student>; fields?: FindOptionsSelect<Student> }): Promise<NullableType<Student>> {
-    return this.studentRepository.findOne({
+    return await this.studentRepository.findOne({
       where: where,
       select: fields,
     });
@@ -63,6 +61,11 @@ export class StudentService {
   }
 
   async enable(mssv: Student["mssv"]): Promise<Boolean> {
+    await this.studentRepository.save({ mssv: mssv, enable: true });
+    return true;
+  }
+
+  async disable(mssv: Student["mssv"]): Promise<Boolean> {
     await this.studentRepository.save({ mssv: mssv, enable: false });
     return true;
   }

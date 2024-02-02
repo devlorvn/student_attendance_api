@@ -11,6 +11,7 @@ import { ConfigModule } from "@nestjs/config";
 import * as Joi from "joi";
 import { AllExceptionFilter } from "./common/exceptions/filter/exception.filter";
 import { AppController } from "./app.controller";
+import { UserModule } from "./modules/manage/user/user.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AppController } from "./app.controller";
     AdminModule,
     PositionAdminModule,
     StudentModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

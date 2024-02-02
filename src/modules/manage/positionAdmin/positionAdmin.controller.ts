@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
 import PositionAdminService from "./positionAdmin.service";
 import { CreatePositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { AdminAuthGuard } from "src/common/guards";
 
 @Controller("admin/positions/manage")
-// @UseGuards(AuthGuard("admin"))
+// @UseGuards(AdminAuthGuard)
 @ApiTags("Admin Position Manage API")
 export default class PositionAdminController {
   constructor(private readonly positionAdminService: PositionAdminService) {}

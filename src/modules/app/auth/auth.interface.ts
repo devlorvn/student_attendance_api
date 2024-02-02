@@ -1,15 +1,12 @@
+import { IToken } from "src/common/utils/generateJwt.ulti";
 import { Student } from "src/modules/student/entities/student.entity";
 
-export interface ITokenPayload {
-  mssv: Student["mssv"];
-  createdAt: Date;
-  expireIn: Date;
+export interface ITokenPayload extends IToken {
+  key: Student["mssv"];
 }
 
-export interface IRefreshTokenPayload {
-  mssv: Student["mssv"];
-  createdAt: Date;
-  expireIn: Date;
+export interface IRefreshTokenPayload extends IToken {
+  key: Student["mssv"];
 }
 
 export interface RequestWithUser extends Request {

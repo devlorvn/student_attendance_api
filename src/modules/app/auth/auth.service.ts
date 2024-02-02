@@ -1,5 +1,4 @@
 import { JwtService } from "@nestjs/jwt";
-import * as bcryptjs from "bcryptjs";
 import { Injectable } from "@nestjs/common";
 import { CreateStudentDto, UpdatePasswordStudentDto } from "src/modules/student/dtos/student.dto";
 import { Student } from "src/modules/student/entities/student.entity";
@@ -8,7 +7,7 @@ import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import * as dayjs from "dayjs";
 import { IRefreshTokenPayload, ITokenPayload } from "src/modules/app/auth/auth.interface";
 import { ConfigService } from "@nestjs/config";
-import { StudentErrorCode } from "src/common/enums";
+import { comparePass, generateRefreshToken, generateToken } from "src/common/utils";
 
 @Injectable()
 export class AuthService {
@@ -32,10 +31,10 @@ export class AuthService {
       },
     });
 
-    if (!user || !bcryptjs.compareSync(password, user.password)) {
+    if (!user || !comparePass(password, user.password)) {
       throw ExceptionFactory.badRequestException({
         message: "Tài khoản hoặc mật khẩu không chính xác.",
-        errorCode: StudentErrorCode.VALIDATE_FAILED,
+        errorCode: -1,
       });
     }
 
@@ -59,10 +58,10 @@ export class AuthService {
   }
 
   public async changePassword(user: Student, changePasswordData: UpdatePasswordStudentDto) {
-    if (!this.compare(changePasswordData.oldPassword, user.password)) {
+    if (!comparePass(changePasswordData.oldPassword, user.password)) {
       throw ExceptionFactory.badRequestException({
         message: "Mật khẩu không chính xác.",
-        errorCode: StudentErrorCode.VALIDATE_FAILED,
+        errorCode: -1,
       });
     }
 
@@ -79,67 +78,19 @@ export class AuthService {
     if (!user) {
       throw ExceptionFactory.badRequestException({
         message: "Tài khoản không tồn tại",
-        errorCode: StudentErrorCode.NOT_FOUND,
+        errorCode: -1,
       });
     }
 
     await this.studentService.update(user, { password: user.mssv.toString() });
   }
 
-  /**
-   * Compare text and hash text using bcrypt
-   * @param plainText
-   * @param hashText
-   * @returns Boolean
-   */
-  private compare(plainText: string, hashText: string) {
-    return bcryptjs.compareSync(plainText, hashText);
-  }
-
-  /**
-   * Generate token and update to DB
-   * @param mssv
-   * @param tokenExpire default 1 day
-   * @param refreshTokenExpire default 7 days
-   * @returns token, refreshToken
-   */
-  private async generateForAuth(mssv: Student["mssv"], tokenExpire: number = 1, refreshTokenExpire: number = 7) {
-    const newToken: string = this.generateToken({
-      mssv,
-      createdAt: new Date(),
-      expireIn: dayjs().add(tokenExpire, "day").toDate(),
-    });
-
-    const newRefreshToken: string = this.generateRefreshToken({
-      mssv,
-      createdAt: new Date(),
-      expireIn: dayjs().add(refreshTokenExpire, "day").toDate(),
-    });
-
-    await this.studentService.updateById(mssv, {
-      moreInfo: {
-        token: bcryptjs.hashSync(newToken),
-        refreshToken: bcryptjs.hashSync(newRefreshToken),
-      },
-    });
-
+  private async generateForAuth(mssv: Student["mssv"]) {
+    const token = await generateToken(mssv, this.jwtService, this.configService);
+    const refreshToken = await generateRefreshToken(mssv, this.jwtService, this.configService);
     return {
-      token: newToken,
-      refreshToken: newRefreshToken,
+      token,
+      refreshToken,
     };
-  }
-
-  private generateToken(payload: ITokenPayload) {
-    return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get("JWT_TOKEN_EXPIRE_TIME"),
-      secret: this.configService.get("JWT_SECRET"),
-    });
-  }
-
-  private generateRefreshToken(payload: IRefreshTokenPayload) {
-    return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get("JWT_REFRESH_TOKEN_EXPIRE_TIME"),
-      secret: this.configService.get("JWT_REFRESH_SECRET"),
-    });
   }
 }

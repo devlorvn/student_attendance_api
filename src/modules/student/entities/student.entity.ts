@@ -50,7 +50,7 @@ export class Student {
   images: string[];
 
   @Column({ type: "bool", default: false })
-  validate: false;
+  validate: boolean;
 
   @Column({ type: "timestamptz", nullable: true })
   validateAt: Date | null;
@@ -78,7 +78,7 @@ export class Student {
 
   @BeforeInsert()
   @BeforeUpdate()
-  hashPassword() {
+  private hashPassword() {
     if (this.password) {
       this.password = bcrypt.hashSync(this.password);
     }

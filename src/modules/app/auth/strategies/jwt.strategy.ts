@@ -23,13 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt-user") {
   async validate(payload: ITokenPayload) {
     const user: Student | null = await this.userService.findOne({
       where: {
-        mssv: payload.mssv,
+        mssv: payload.key,
       },
     });
 
     if (!user) {
       throw ExceptionFactory.unauthorizedException({
-        message: "Wrong token",
+        message: "Token sai",
         errorCode: 401,
       });
     }
@@ -51,10 +51,10 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-user-ref
   }
 
   async validate(payload: IRefreshTokenPayload) {
-    const user: Student | null = await this.studentService.findOne({ where: { mssv: payload.mssv } });
+    const user: Student | null = await this.studentService.findOne({ where: { mssv: payload.key } });
     if (!user) {
       throw ExceptionFactory.unauthorizedException({
-        message: "Wrong token",
+        message: "Token sai",
         errorCode: 401,
       });
     }

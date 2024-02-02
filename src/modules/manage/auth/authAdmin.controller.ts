@@ -4,9 +4,8 @@ import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { LoginAdminResponse } from "./entities/loginResponse.entity";
 import { LoginAdminDto } from "./dtos/loginAdmin.dto";
 import { AuthService } from "./authAdmin.service";
-import { AdminAuthGuard } from "src/common/guards/admin.guard";
-import { JwtAdminAuthGuard } from "src/common/guards/jwtAuth.guard";
 import { UpdatePasswordAdminDto } from "../admin/dto/admin.dto";
+import { AdminAuthGuard, JwtAdminAuthGuard } from "src/common/guards";
 
 @Controller("admin/auth")
 @ApiTags("Admin Auth API")
