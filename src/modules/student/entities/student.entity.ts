@@ -1,5 +1,15 @@
 import { UserGender } from "src/common/enums/userType.enum";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  AfterLoad,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import * as bcrypt from "bcryptjs";
 
 @Entity("student")
@@ -40,7 +50,7 @@ export class Student {
   images: string[];
 
   @Column({ type: "bool", default: false })
-  validate: false;
+  validate: boolean;
 
   @Column({ type: "timestamptz", nullable: true })
   validateAt: Date | null;
@@ -68,7 +78,7 @@ export class Student {
 
   @BeforeInsert()
   @BeforeUpdate()
-  hashPassword() {
+  private hashPassword() {
     if (this.password) {
       this.password = bcrypt.hashSync(this.password);
     }

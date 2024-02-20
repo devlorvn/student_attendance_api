@@ -3,6 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import PositionAdmin from "./entities/positionAdmin.entity";
 import { CreatePositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
+import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
+import { AdminErrorCode } from "src/common/enums";
 
 @Injectable()
 export default class PositionAdminService {
@@ -12,45 +14,54 @@ export default class PositionAdminService {
   ) {}
 
   // CREATE
-  async createPositionAdmin(createPositionDto: CreatePositionAdminDto) {
+  async create(createPositionDto: CreatePositionAdminDto) {
     const newPosition = this.positionAdminRepository.create(createPositionDto);
     await this.positionAdminRepository.save(newPosition);
     return newPosition;
   }
 
   // UPDATE
-  async updatePositionAdmin(updatePositionDto: UpdatePositionAdminDto) {
+  async update(updatePositionDto: UpdatePositionAdminDto) {
     const { id, ...updateData } = updatePositionDto;
     await this.positionAdminRepository.update(id, updateData);
   }
 
   // GET ALL
-  async getAllPositionAdmin() {
+  async findAll() {
     const positions = await this.positionAdminRepository.find();
     return positions;
   }
 
   // GET BY ID
-  async getPositionAdminById(id: string) {
+  async findById(id: PositionAdmin["id"]) {
     const position = await this.positionAdminRepository.findOne({
       where: { id },
     });
-    if (!position) throw new HttpException("Position not found", HttpStatus.NOT_FOUND);
+    if (!position)
+      throw ExceptionFactory.notFoundException({
+        message: `Position with id: ${id} was not found`,
+      });
 
     return position;
   }
 
   // DELETE
-  async deletePositionAdmin(id: string) {
+  async delete(id: PositionAdmin["id"]) {
     const result = await this.positionAdminRepository.delete(id);
     if (!result.affected) {
-      throw new HttpException("Position not found", HttpStatus.NOT_FOUND);
+      throw ExceptionFactory.notFoundException({
+        message: `Position with id: ${id} was not found`,
+      });
     }
   }
 
   // CHECK IF EXIST ID
-  async existPositionAdmin(id: string) {
+  async exist(id: PositionAdmin["id"]) {
     const exist = await this.positionAdminRepository.exist({ where: { id } });
-    if (!exist) throw new HttpException("Position not found", HttpStatus.NOT_FOUND);
+    if (!exist) {
+      throw ExceptionFactory.notFoundException({
+        message: `Position with id: ${id} was not found`,
+      });
+    }
   }
 }

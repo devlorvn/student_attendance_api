@@ -1,9 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import AdminService from "./admin.service";
 import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 import PositionAdminService from "../positionAdmin/positionAdmin.service";
+import { ApiTags } from "@nestjs/swagger";
+import { JwtAdminAuthGuard } from "src/common/guards";
 
-@Controller("admin")
+@Controller("admin/manage")
+// @UseGuards(JwtAdminAuthGuard)
+@ApiTags("Admin Manage API")
 export default class AdminController {
   constructor(
     private readonly adminService: AdminService,
@@ -11,29 +15,30 @@ export default class AdminController {
   ) {}
 
   @Get()
-  getAllAdmin() {
-    return this.adminService.getAllAdmin();
+  async getAllAdmin() {
+    return this.adminService.findAll();
   }
 
   @Get(":id")
-  getAdminById(@Param("id") id: string) {
-    return this.adminService.getAdminById(id);
+  async getAdminById(@Param("id") id: string) {
+    return this.adminService.findOneById(id);
   }
 
   @Post()
-  createAdmin(@Body() admin: CreateAdminDto) {
-    this.adminPositionService.existPositionAdmin(admin.positionId);
-    return this.adminService.createAdmin(admin);
+  async createAdmin(@Body() admin: CreateAdminDto) {
+    await this.adminPositionService.exist(admin.positionId);
+    return this.adminService.create(admin);
   }
 
   @Put(":id")
-  updateAdmin(@Body() admin: UpdateAdminDto) {
-    if (admin.positionId) this.adminPositionService.existPositionAdmin(admin.positionId);
-    return this.adminService.updateAdmin(admin);
+  async updateAdmin(@Body() admin: UpdateAdminDto) {
+    await this.adminPositionService.exist(admin.positionId);
+    const { id, ...data } = admin;
+    return this.adminService.updateById(id, data);
   }
 
   @Delete(":id")
-  deleteAdmin(@Param("id") id: string) {
-    return this.adminService.deleteAdmin(id);
+  async deleteAdmin(@Param("id") id: string) {
+    return this.adminService.delete(id);
   }
 }

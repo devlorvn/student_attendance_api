@@ -92,5 +92,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "imports": {
+    "@modules": "./src/modules",
+    "@commons": "./src/common"
   }
 }

@@ -1,6 +1,7 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsString, Min } from "class-validator";
+import { ApiParam, ApiProperty } from "@nestjs/swagger";
+import { Exclude } from "class-transformer";
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsString, Min, MinLength } from "class-validator";
 import { UserGender } from "src/common/enums/userType.enum";
 
 export class CreateStudentDto {
@@ -34,7 +35,7 @@ export class CreateStudentDto {
   })
   @IsNotEmpty()
   @IsString()
-  @Min(6)
+  @MinLength(6)
   password: string;
 
   @ApiProperty({
@@ -79,9 +80,65 @@ export class CreateStudentDto {
 }
 
 export class UploadedFileDto {
+  @ApiProperty({
+    type: Number,
+    example: 123,
+  })
   @IsNotEmpty()
   @IsNumber()
   id: number;
 }
 
-export class UpdateUserDto extends PartialType(CreateStudentDto) {}
+export class UpdatePasswordStudentDto {
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  oldPassword: string;
+
+  @ApiProperty({
+    type: String,
+    example: "112233",
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(6)
+  newPassord: string;
+}
+
+export class UpdateStudentDto extends PartialType(CreateStudentDto) {
+  @Exclude()
+  password?: string;
+}
+
+export class FindStudentsMatch extends PartialType(CreateStudentDto) {
+  @Exclude()
+  password?: string;
+
+  @Exclude()
+  dob?: string;
+
+  @ApiProperty({
+    type: Number,
+    example: 10,
+  })
+  @IsOptional()
+  @IsNumber()
+  limit?: number = 10;
+
+  @ApiProperty({
+    type: Number,
+    example: 1,
+  })
+  @IsOptional()
+  @IsNumber()
+  page?: number = 1;
+}
+
+export class PaginateDto {
+  limit: number = 10;
+
+  page?: number = 1;
+}

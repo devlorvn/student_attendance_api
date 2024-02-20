@@ -1,33 +1,37 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
 import PositionAdminService from "./positionAdmin.service";
 import { CreatePositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { AdminAuthGuard } from "src/common/guards";
 
-@Controller("positions")
+@Controller("admin/positions/manage")
+// @UseGuards(AdminAuthGuard)
+@ApiTags("Admin Position Manage API")
 export default class PositionAdminController {
   constructor(private readonly positionAdminService: PositionAdminService) {}
 
   @Get()
-  getAllPositionAdmin() {
-    return this.positionAdminService.getAllPositionAdmin();
+  async getAllPositionAdmin() {
+    return this.positionAdminService.findAll();
   }
 
   @Get(":id")
-  getPositionAdminById(@Param("id") id: string) {
-    return this.positionAdminService.getPositionAdminById(id);
+  async getPositionAdminById(@Param("id") id: string) {
+    return this.positionAdminService.findById(id);
   }
 
   @Post()
-  createPositionAdmin(@Body() position: CreatePositionAdminDto) {
-    return this.positionAdminService.createPositionAdmin(position);
+  async createPositionAdmin(@Body() position: CreatePositionAdminDto) {
+    return this.positionAdminService.create(position);
   }
 
   @Put(":id")
-  updatePositionAdmin(@Body() position: UpdatePositionAdminDto) {
-    return this.positionAdminService.updatePositionAdmin(position);
+  async updatePositionAdmin(@Body() position: UpdatePositionAdminDto) {
+    return this.positionAdminService.update(position);
   }
 
   @Delete(":id")
-  deletePositionAdmin(@Param("id") id: string) {
-    return this.positionAdminService.deletePositionAdmin(id);
+  async deletePositionAdmin(@Param("id") id: string) {
+    return this.positionAdminService.delete(id);
   }
 }

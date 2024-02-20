@@ -1,8 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import Admin from "./entities/admin.entity";
-import { Repository } from "typeorm";
+import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from "typeorm";
 import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
+import { NullableType } from "src/common/types";
+import { AdminErrorCode, PostgresErrorCode } from "src/common/enums";
+import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 
 @Injectable()
 export default class AdminService {
@@ -12,37 +15,62 @@ export default class AdminService {
   ) {}
 
   // CREATE
-  async createAdmin(createAdminDto: CreateAdminDto) {
-    const newAdmin = this.adminRepository.create(createAdminDto);
-    await this.adminRepository.save(newAdmin);
-    return newAdmin;
+  async create(createAdminDto: CreateAdminDto) {
+    try {
+      const newAdmin = this.adminRepository.create(createAdminDto);
+      return await this.adminRepository.save(newAdmin);
+    } catch (error) {
+      if ((error.code = PostgresErrorCode.UniqueViolation)) {
+        throw ExceptionFactory.badRequestException({
+          message: `Admin với email=${createAdminDto.email} đã được sử dụng.`,
+          errorCode: -100,
+        });
+      }
+      throw error;
+    }
   }
 
-  // UPDATE
-  async updateAdmin(updateAdminDto: UpdateAdminDto) {
-    const { id, ...updateData } = updateAdminDto;
-    await this.adminRepository.update(id, updateData);
+  // UPDATE BY ID
+  async updateById(id: Admin["id"], payload: DeepPartial<Admin>) {
+    return await this.adminRepository.save({ id, ...payload });
+  }
+
+  // UPDATE BY ADMIN OBJECT
+  async update(admin: Admin, payload: DeepPartial<Admin>) {
+    return await this.adminRepository.save(Object.assign(admin, payload));
   }
 
   // GET ALL
-  async getAllAdmin() {
+  async findAll() {
     const admins = await this.adminRepository.find();
     return admins;
   }
 
   // GET BY ID
-  async getAdminById(id: string) {
+  async findOneById(id: Admin["id"]) {
     const user = await this.adminRepository.findOne({ where: { id } });
-    if (!user) throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
-
+    if (!user)
+      throw ExceptionFactory.notFoundException({
+        message: "Admin không được tìm thấy",
+      });
     return user;
   }
 
+  // GET ONE BY ANY CLAUSE
+  async findOne({ where, fields }: { where: FindOptionsWhere<Admin>; fields?: FindOptionsSelect<Admin> }): Promise<NullableType<Admin>> {
+    return this.adminRepository.findOne({
+      where: where,
+      select: fields,
+    });
+  }
+
   // DELETE
-  async deleteAdmin(id: string) {
+  async delete(id: Admin["id"]) {
     const result = await this.adminRepository.delete(id);
     if (!result.affected) {
-      throw new HttpException("Admin not found", HttpStatus.NOT_FOUND);
+      throw ExceptionFactory.notFoundException({
+        message: "Admin không được tìm thấy",
+      });
     }
   }
 }
