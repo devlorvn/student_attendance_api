@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from "typeorm";
+import { DeepPartial, FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
 import { NullableType } from "src/common/types";
-import { CreateEventDto } from "./dto/event.dto";
+import { CreateEventDto, EventDto } from "./dto/event.dto";
 import Event from "./entities/event.entity";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
+import { PaginationDto } from "src/common/dtos";
 
 @Injectable()
 export default class EventService {
@@ -21,7 +22,9 @@ export default class EventService {
 
   // UPDATE BY ID
   async updateById(id: Event["id"], payload: DeepPartial<Event>) {
-    return await this.eventRepository.save({ id, ...payload });
+    payload.id = id;
+    delete payload.createdBy;
+    return await this.eventRepository.save(payload);
   }
 
   // UPDATE BY EVENT OBJECT
@@ -31,17 +34,26 @@ export default class EventService {
 
   // GET ALL
   async findAll({
+    pagination,
     where,
     fields,
-    limit = 10,
-    page = 1,
   }: {
+    pagination: PaginationDto;
     where?: FindOptionsWhere<Event>;
     fields?: FindOptionsSelect<Event>;
-    limit?: number;
-    page?: number;
   }): Promise<Event[]> {
-    return await this.eventRepository.find({ where: where, select: fields, take: limit, skip: (page - 1) * limit });
+    return await this.eventRepository.find({
+      where: {
+        ...where,
+        title: where?.title && ILike(`%${where.title}%`),
+        content: where?.banner && ILike(`%${where.content}%`),
+        subTitle: where?.subTitle && ILike(`%${where.subTitle}%`),
+      },
+      select: fields,
+      take: pagination.pageSize,
+      skip: pagination.skip,
+      order: pagination.orderBy,
+    });
   }
 
   // GET BY ID

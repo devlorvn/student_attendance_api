@@ -38,7 +38,17 @@ export class AuthService {
   }
 
   public async login(id: Admin["id"]) {
-    const token: string = await generateToken(id, this.jwtService, this.configService);
+    const token: string = await generateToken(
+      id,
+      this.jwtService,
+      this.configService.get("JWT_SECRET"),
+      this.configService.get("JWT_TOKEN_EXPIRE_TIME")
+    );
+    await this.adminService.updateById(id, {
+      more_info: {
+        token: token,
+      },
+    });
 
     return {
       token,

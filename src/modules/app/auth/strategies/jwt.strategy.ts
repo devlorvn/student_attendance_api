@@ -6,6 +6,8 @@ import { StudentService } from "src/modules/student/student.service";
 import { IRefreshTokenPayload, ITokenPayload } from "src/modules/app/auth/auth.interface";
 import { Student } from "src/modules/student/entities/student.entity";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
+import { compareToken, getTokenFromHeader } from "src/common/utils";
+import { Request } from "express";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt-user") {
@@ -17,22 +19,24 @@ export class JwtStrategy extends PassportStrategy(Strategy, "jwt-user") {
       jwtFromRequest: ExtractJwt.fromHeader("token"),
       ignoreExpiration: false,
       secretOrKey: configService.get("JWT_SECRET"),
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: ITokenPayload) {
+  async validate(req: Request, payload: ITokenPayload) {
     const user: Student | null = await this.userService.findOne({
       where: {
         mssv: payload.key,
       },
     });
 
-    if (!user) {
+    if (!user && !compareToken(getTokenFromHeader(req, "token"), user.moreInfo.refreshToken)) {
       throw ExceptionFactory.unauthorizedException({
-        message: "Token sai",
+        message: "Token không hợp lệ",
         errorCode: 401,
       });
     }
+
     return user;
   }
 }
@@ -47,14 +51,18 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "jwt-user-ref
       jwtFromRequest: ExtractJwt.fromHeader("refreshtoken"),
       ignoreExpiration: false,
       secretOrKey: configService.get("JWT_REFRESH_SECRET"),
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: IRefreshTokenPayload) {
-    const user: Student | null = await this.studentService.findOne({ where: { mssv: payload.key } });
-    if (!user) {
+  async validate(req: Request, payload: IRefreshTokenPayload) {
+    const user: Student | null = await this.studentService.findOne({
+      where: { mssv: payload.key },
+    });
+
+    if (!user && !compareToken(getTokenFromHeader(req, "refreshtoken"), user.moreInfo.refreshToken)) {
       throw ExceptionFactory.unauthorizedException({
-        message: "Token sai",
+        message: "Token đã hết hạn hoặc không hợp lệ",
         errorCode: 401,
       });
     }

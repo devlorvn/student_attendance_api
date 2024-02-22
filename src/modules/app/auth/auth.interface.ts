@@ -1,4 +1,4 @@
-import { IToken } from "src/common/utils/generateJwt.ulti";
+import { IToken } from "src/common/utils/generateJwt.util";
 import { Student } from "src/modules/student/entities/student.entity";
 
 export interface ITokenPayload extends IToken {

@@ -120,21 +120,19 @@ export class FindStudentsMatch extends PartialType(CreateStudentDto) {
   @Exclude()
   dob?: string;
 
+  class?: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: UserGender;
+  major?: string;
   @ApiProperty({
     type: Number,
-    example: 10,
+    example: 51900707,
   })
   @IsOptional()
-  @IsNumber()
-  limit?: number = 10;
-
-  @ApiProperty({
-    type: Number,
-    example: 1,
-  })
-  @IsOptional()
-  @IsNumber()
-  page?: number = 1;
+  @IsNumberString()
+  mssv?: number;
+  startYear?: number;
 }
 
 export class PaginateDto {
