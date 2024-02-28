@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import AdminService from "./admin.service";
-import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
+import { AdminDto, CreateAdminDto, QueryAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 import PositionAdminService from "../positionAdmin/positionAdmin.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { JwtAdminAuthGuard } from "src/common/guards";
+import { ApiCreate, ApiDelete, ApiFindAll, ApiFindOne, ApiUpdate } from "src/common/decorators";
+import { PaginationDto } from "src/common/dtos";
 
 @Controller("admin/manage")
 // @UseGuards(JwtAdminAuthGuard)
@@ -14,30 +16,60 @@ export default class AdminController {
     private readonly adminPositionService: PositionAdminService
   ) {}
 
-  @Get()
-  async getAllAdmin() {
-    return this.adminService.findAll();
+  @ApiQuery({
+    name: "pageSize",
+    type: Number,
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: "orderBy",
+    required: false,
+    example: {
+      createdAt: "asc",
+    },
+  })
+  @ApiQuery({
+    type: QueryAdminDto,
+  })
+  @ApiFindAll("Admin", AdminDto)
+  async getAllAdmin(@Query() { pageSize = 10, page = 1, orderBy, ...filters }: PaginationDto & QueryAdminDto) {
+    return this.adminService.findAll({
+      pagination: {
+        page: page,
+        pageSize: pageSize,
+        orderBy: orderBy,
+        skip: (page - 1) * pageSize,
+      },
+      where: filters,
+    });
   }
 
-  @Get(":id")
+  @ApiFindOne("Admin", AdminDto)
   async getAdminById(@Param("id") id: string) {
     return this.adminService.findOneById(id);
   }
 
-  @Post()
+  @ApiCreate("Admin", CreateAdminDto)
   async createAdmin(@Body() admin: CreateAdminDto) {
     await this.adminPositionService.exist(admin.positionId);
     return this.adminService.create(admin);
   }
 
-  @Put(":id")
+  @ApiUpdate("Admin", UpdateAdminDto)
   async updateAdmin(@Body() admin: UpdateAdminDto) {
     await this.adminPositionService.exist(admin.positionId);
     const { id, ...data } = admin;
     return this.adminService.updateById(id, data);
   }
 
-  @Delete(":id")
+  @ApiDelete("Admin")
   async deleteAdmin(@Param("id") id: string) {
     return this.adminService.delete(id);
   }

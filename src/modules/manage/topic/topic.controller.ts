@@ -6,13 +6,13 @@ import { PaginationDto } from "src/common/dtos";
 import { CreateTopicDto, QueryTopicDto, TopicDto, UpdateTopicDto } from "./dto/topic.dto";
 import TopicService from "./topic.service";
 
-@Controller("admin/topic/manage")
+@Controller("admin/topic")
 @UseGuards(JwtAdminAuthGuard)
 @ApiTags("Topic Manage API")
 export default class TopicController {
   constructor(private readonly topicService: TopicService) {}
 
-  @ApiFindOne("Event", TopicDto)
+  @ApiFindOne("Topic", TopicDto)
   async getEventById(@Param("id") id: string) {
     return this.topicService.findOneById(id);
   }
@@ -35,6 +35,9 @@ export default class TopicController {
     example: {
       createdAt: "asc",
     },
+  })
+  @ApiQuery({
+    type: QueryTopicDto,
   })
   @ApiFindAll("Topic", TopicDto)
   async getAllTopic(@Query() { pageSize = 10, page = 1, orderBy, ...filters }: PaginationDto & QueryTopicDto) {

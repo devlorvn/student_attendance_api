@@ -43,6 +43,7 @@ export class QueryTopicDto {
     name: "id",
     type: String,
     example: "abc",
+    required: false,
   })
   @IsUUID()
   id: string;
@@ -51,6 +52,7 @@ export class QueryTopicDto {
     name: "name",
     type: String,
     example: "abc",
+    required: false,
   })
   @IsString()
   name: string;
@@ -59,6 +61,7 @@ export class QueryTopicDto {
     name: "createdAt",
     type: Date,
     example: "2023-30-12",
+    required: false,
   })
   @IsDate()
   createdAt: Date;
@@ -67,6 +70,7 @@ export class QueryTopicDto {
     name: "updatedAt",
     type: Date,
     example: "2023-30-12",
+    required: false,
   })
   @IsDate()
   updatedAt: Date;

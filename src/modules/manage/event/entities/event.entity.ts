@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -13,6 +14,7 @@ import {
 } from "typeorm";
 import Admin from "../../admin/entities/admin.entity";
 import Topic from "../../topic/entities/topic.entity";
+import RegisterEvent from "src/modules/registerEvent/entities/registerEvent.entity";
 
 @Entity("event")
 export default class Event {
@@ -55,14 +57,13 @@ export default class Event {
   @Column({ type: "int4", default: 0 })
   registered: number;
 
-  // @Column({ type: "jsonb", default: {} })
-  // topics: {
-  //   type: string;
-  //   name: string;
-  // };
-  @ManyToMany(() => Topic, { cascade: true })
+  @ManyToMany(() => Topic, (topic) => topic.events, { cascade: true })
   @JoinTable()
   topics: Topic[];
+
+  @OneToMany(() => RegisterEvent, (registerEvent) => registerEvent.eventId, { cascade: true })
+  @JoinColumn()
+  registers: RegisterEvent[];
 
   @OneToOne(() => Admin, (admin: Admin) => admin.id)
   createdBy: string;
@@ -73,9 +74,7 @@ export default class Event {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @BeforeInsert()
-  // @BeforeUpdate()
-  // toggleRegistrationMode() {
-  //   this.startRegistrationDate || this.endRegistrationDate ? (this.registration = true) : (this.registration = false);
-  // }
+  constructor(event: Partial<Event>) {
+    Object.assign(this, event);
+  }
 }

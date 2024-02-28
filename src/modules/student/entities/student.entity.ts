@@ -6,11 +6,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import * as bcrypt from "bcryptjs";
+import RegisterEvent from "src/modules/registerEvent/entities/registerEvent.entity";
 
 @Entity("student")
 export class Student {
@@ -70,6 +73,11 @@ export class Student {
     refreshToken: string;
     forgetPasswordToken: string;
   };
+
+  @OneToMany(() => RegisterEvent, (registerEvent) => registerEvent.mssv)
+  @JoinColumn()
+  events: RegisterEvent[];
+
   @CreateDateColumn()
   createdAt: Date;
 

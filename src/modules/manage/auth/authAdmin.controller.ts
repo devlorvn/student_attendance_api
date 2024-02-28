@@ -1,11 +1,12 @@
 import { RequestWithAdmin } from "./authAdmin.interface";
-import { Body, Controller, HttpCode, HttpStatus, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { LoginAdminResponse } from "./entities/loginResponse.entity";
 import { LoginAdminDto } from "./dtos/loginAdmin.dto";
 import { AuthService } from "./authAdmin.service";
 import { UpdatePasswordAdminDto } from "../admin/dto/admin.dto";
 import { AdminAuthGuard, JwtAdminAuthGuard } from "src/common/guards";
+import { BaseResponseEntity } from "src/common/entities/BaseResponse.entity";
 
 @Controller("admin/auth")
 @ApiTags("Admin Auth API")
@@ -28,13 +29,19 @@ export class AuthController {
   @UseGuards(JwtAdminAuthGuard)
   @Post("logout")
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: BaseResponseEntity,
+  })
   async logout(@Req() req: RequestWithAdmin) {
     return this.authService.logout(req.user.id);
   }
 
   @UseGuards(JwtAdminAuthGuard)
-  @Put("change-password")
+  @Patch("change-password")
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    type: BaseResponseEntity,
+  })
   async changePassword(@Req() req: RequestWithAdmin, @Body() data: UpdatePasswordAdminDto) {
     return this.authService.changePassword(req.user, data);
   }

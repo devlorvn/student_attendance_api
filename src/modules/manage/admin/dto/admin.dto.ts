@@ -114,3 +114,84 @@ export class UpdatePasswordAdminDto {
   @MinLength(6)
   newPassord: string;
 }
+
+export class QueryAdminDto {
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  id: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
+  @IsEmail()
+  @IsOptional()
+  email: string;
+}
+
+export class AdminDto {
+  @ApiProperty({
+    example: "123456",
+  })
+  id: string;
+
+  @ApiProperty({
+    example: "aaaa",
+  })
+  name: string;
+
+  @ApiProperty({
+    example: "aaaa",
+  })
+  email: string;
+
+  @ApiProperty({
+    example: "...",
+  })
+  password: string;
+
+  @ApiProperty({
+    example: "aaaa",
+  })
+  positionId: string;
+
+  @ApiProperty({
+    example: "aaaa",
+  })
+  permissions: any | null;
+
+  @ApiProperty({
+    example: true,
+  })
+  enable: boolean;
+
+  @ApiProperty({
+    example: {},
+  })
+  more_info: {
+    token: string;
+    forgetPasswordToken: string;
+  };
+
+  @ApiProperty({
+    example: "2023-12-30",
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    example: "2023-12-30",
+  })
+  updatedAt: Date;
+}
