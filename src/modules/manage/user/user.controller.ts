@@ -8,6 +8,7 @@ import { RequestWithAdmin } from "../auth/authAdmin.interface";
 import { FindStudentsMatch } from "src/modules/student/dtos/student.dto";
 import { ApiFilterQuery, ApiFindAll } from "src/common/decorators";
 import { JwtAdminAuthGuard } from "src/common/guards";
+import { PaginationDto } from "src/common/dtos";
 
 @Controller("admin/user/manage")
 @ApiTags("User Manage API")
@@ -25,9 +26,9 @@ export default class UserController {
   }
 
   @Post("/filter")
-  @ApiFilterQuery(FindStudentsMatch)
+  // @ApiFilterQuery(PaginationDto)
   @HttpCode(HttpStatus.OK)
-  async filterUser(@Body() data: FindStudentsMatch) {
+  async filterUser(@Body() data: FindStudentsMatch, @Param("limit") limit: number, @Param("page") page: number) {
     return await this.studentService.findAll({
       where: {
         mssv: data.mssv,
@@ -38,8 +39,8 @@ export default class UserController {
         startYear: data.startYear,
         class: data.class,
       },
-      limit: data.limit,
-      page: data.page,
+      limit: limit,
+      page: page,
     });
   }
 

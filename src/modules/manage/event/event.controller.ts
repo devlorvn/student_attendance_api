@@ -1,41 +1,70 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { CreateEventDto, UpdateEventDto } from "./dto/event.dto";
+import { Body, Controller, Param, Query, Req, UseGuards } from "@nestjs/common";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import { CreateEventDto, EventDto, QueryEventDto, UpdateEventDto } from "./dto/event.dto";
 import EventService from "./event.service";
-import { AdminAuthGuard } from "src/common/guards";
+import { JwtAdminAuthGuard } from "src/common/guards";
+import { ApiCreate, ApiDelete, ApiFindAll, ApiFindOne, ApiUpdate } from "src/common/decorators";
+import { PaginationDto } from "src/common/dtos";
+import { RequestWithAdmin } from "../auth/authAdmin.interface";
 
 @Controller("admin/event/manage")
-@UseGuards(AdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 @ApiTags("Event Manage API")
 export default class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Get()
-  async getAllEvent(@Query() { limit = 10, page = 1 }: { limit?: number; page?: number }) {
-    return this.eventService.findAll({ limit, page });
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.OK)
-  async filterEvent() {}
-
-  @Get(":id")
+  @ApiFindOne("Event", EventDto)
   async getEventById(@Param("id") id: string) {
     return this.eventService.findOneById(id);
   }
 
-  @Post()
-  async createEvent(@Body() event: CreateEventDto) {
+  @ApiQuery({
+    name: "pageSize",
+    type: Number,
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: "orderBy",
+    required: false,
+    example: {
+      createdAt: "asc",
+    },
+  })
+  @ApiFindAll("Event", EventDto)
+  async getAllEvent(@Query() { pageSize = 10, page = 1, orderBy, ...filters }: PaginationDto & QueryEventDto) {
+    // console.log("\x1b[31m%s\x1b[0m", filters);
+    // console.log("\x1b[36m%s\x1b[0m", { page, pageSize, orderBy });
+    return this.eventService.findAll({
+      pagination: {
+        page: page,
+        pageSize: pageSize,
+        orderBy: orderBy,
+        skip: (page - 1) * pageSize,
+      },
+      where: filters,
+    });
+  }
+
+  @ApiCreate("Event", CreateEventDto)
+  async createEvent(@Body() event: CreateEventDto, @Req() { user }: RequestWithAdmin) {
+    event.createdBy = user.id;
     return this.eventService.create(event);
   }
 
-  @Put(":id")
-  async updateEvent(@Body() event: UpdateEventDto) {
-    const { id, ...data } = event;
-    return this.eventService.updateById(id, data);
+  @ApiUpdate("Event", UpdateEventDto)
+  async updateEvent(@Body() event: UpdateEventDto, @Param("id") id: string) {
+    // console.log("\x1b[36m%s\x1b[0m", { page, pageSize, orderBy });
+    return this.eventService.updateById(id, event);
   }
 
-  @Delete(":id")
+  @ApiDelete("Event")
   async deleteEvent(@Param("id") id: string) {
     return this.eventService.delete(id);
   }

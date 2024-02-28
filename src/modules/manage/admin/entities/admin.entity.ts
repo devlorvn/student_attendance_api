@@ -29,7 +29,6 @@ export default class Admin {
   @Column({ type: "jsonb", default: {} })
   more_info: {
     token: string;
-    refreshToken: string;
     forgetPasswordToken: string;
   };
 

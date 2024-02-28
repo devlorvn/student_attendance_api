@@ -12,7 +12,8 @@ import * as Joi from "joi";
 import { AllExceptionFilter } from "./common/exceptions/filter/exception.filter";
 import { AppController } from "./app.controller";
 import { UserModule } from "./modules/manage/user/user.module";
-import { ProfileModule } from './modules/app/profile/profile.module';
+import { EventModule } from "./modules/manage/event/event.module";
+import { TopicModule } from "./modules/manage/topic/topic.module";
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { ProfileModule } from './modules/app/profile/profile.module';
     PositionAdminModule,
     StudentModule,
     UserModule,
-    ProfileModule,
+    EventModule,
+    TopicModule,
   ],
   controllers: [AppController],
   providers: [

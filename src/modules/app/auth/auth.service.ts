@@ -7,7 +7,7 @@ import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import * as dayjs from "dayjs";
 import { IRefreshTokenPayload, ITokenPayload } from "src/modules/app/auth/auth.interface";
 import { ConfigService } from "@nestjs/config";
-import { comparePass, generateRefreshToken, generateToken } from "src/common/utils";
+import { comparePass, generateToken } from "src/common/utils";
 
 @Injectable()
 export class AuthService {
@@ -44,7 +44,11 @@ export class AuthService {
   }
 
   public async login(mssv: Student["mssv"]) {
-    return await this.generateForAuth(mssv);
+    const authToken = await this.generateForAuth(mssv);
+    await this.studentService.updateById(mssv, {
+      moreInfo: authToken,
+    });
+    return authToken;
   }
 
   public async logout(mssv: Student["mssv"]) {
@@ -54,7 +58,11 @@ export class AuthService {
   }
 
   public async refreshToken(mssv: Student["mssv"]) {
-    return await this.generateForAuth(mssv);
+    const authToken = await this.generateForAuth(mssv);
+    await this.studentService.updateById(mssv, {
+      moreInfo: authToken,
+    });
+    return authToken;
   }
 
   public async changePassword(user: Student, changePasswordData: UpdatePasswordStudentDto) {
@@ -86,8 +94,13 @@ export class AuthService {
   }
 
   private async generateForAuth(mssv: Student["mssv"]) {
-    const token = await generateToken(mssv, this.jwtService, this.configService);
-    const refreshToken = await generateRefreshToken(mssv, this.jwtService, this.configService);
+    const token = await generateToken(mssv, this.jwtService, this.configService.get("JWT_SECRET"), this.configService.get("JWT_TOKEN_EXPIRE_TIME"));
+    const refreshToken = await generateToken(
+      mssv,
+      this.jwtService,
+      this.configService.get("JWT_REFRESH_SECRET"),
+      this.configService.get("JWT_REFRESH_TOKEN_EXPIRE_TIME")
+    );
     return {
       token,
       refreshToken,

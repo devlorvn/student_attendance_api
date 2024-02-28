@@ -46,10 +46,11 @@ export class StudentService {
   }
 
   async findOne({ where, fields }: { where: FindOptionsWhere<Student>; fields?: FindOptionsSelect<Student> }): Promise<NullableType<Student>> {
-    return await this.studentRepository.findOne({
+    const user = await this.studentRepository.findOne({
       where: where,
       select: fields,
     });
+    return user;
   }
 
   async updateById(mssv: Student["mssv"], payload: DeepPartial<Student>): Promise<Student> {

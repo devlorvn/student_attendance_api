@@ -6,6 +6,9 @@ import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import Admin from "../../admin/entities/admin.entity";
 import AdminService from "../../admin/admin.service";
 import { ITokenPayload } from "../authAdmin.interface";
+import { compareToken, getTokenFromHeader } from "src/common/utils";
+import { Request } from "express";
+import { isUUID } from "class-validator";
 
 @Injectable()
 export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
@@ -17,17 +20,33 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
       jwtFromRequest: ExtractJwt.fromHeader("token"),
       ignoreExpiration: false,
       secretOrKey: configService.get("JWT_SECRET"),
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: ITokenPayload) {
-    const admin: Admin | null = await this.adminService.findOneById(payload.key);
-    if (!admin) {
+  async validate(req: Request, payload: ITokenPayload) {
+    this.uuidValidate(payload.key);
+
+    const admin: Admin | null = await this.adminService.findOne({
+      where: {
+        id: payload.key,
+      },
+    });
+    if (!admin && !compareToken(admin.more_info.token, getTokenFromHeader(req, "token"))) {
       throw ExceptionFactory.unauthorizedException({
-        message: "Wrong token",
-        errorCode: 401,
+        message: "Token đã hết hạn hoặc không hợp lệ",
+        errorCode: -1,
       });
     }
     return admin;
+  }
+
+  uuidValidate(uuid: string) {
+    if (!isUUID(uuid)) {
+      throw ExceptionFactory.forbiddenException({
+        message: "Định dạng uuid không chính xác",
+        errorCode: -2,
+      });
+    }
   }
 }
