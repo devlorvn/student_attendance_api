@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeepPartial, FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
+import { DeepPartial, FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, In, Repository } from "typeorm";
 import { NullableType } from "src/common/types";
 import { CreateTopicDto } from "./dto/topic.dto";
 import Topic from "./entities/topic.entity";
@@ -55,7 +55,7 @@ export default class TopicService {
 
   // GET BY ID
   async findOneById(id: Topic["id"]) {
-    const topic = await this.topicRepository.findOne({ where: { id } });
+    const topic = await this.topicRepository.findOne({ where: { id }, relations: ["events"] });
     if (!topic)
       throw ExceptionFactory.notFoundException({
         message: "Topic không được tìm thấy",
@@ -82,5 +82,12 @@ export default class TopicService {
         errorCode: -1,
       });
     }
+  }
+
+  // FIND BY ID ARRAY
+  async findByIds(ids: Topic["id"][]) {
+    return await this.topicRepository.findBy({
+      id: In(ids),
+    });
   }
 }

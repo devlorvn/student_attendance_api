@@ -1,67 +1,67 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { ValidateUser, ValidateUsers } from "./dtos/validate.dto";
+import { Body, Controller, Param, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ValidateUsersDto } from "./dtos/validate.dto";
 import { StudentService } from "src/modules/student/student.service";
-import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import { Student } from "src/modules/student/entities/student.entity";
 import { RequestWithAdmin } from "../auth/authAdmin.interface";
-import { FindStudentsMatch } from "src/modules/student/dtos/student.dto";
-import { ApiFilterQuery, ApiFindAll } from "src/common/decorators";
 import { JwtAdminAuthGuard } from "src/common/guards";
 import { PaginationDto } from "src/common/dtos";
+import { ApiFindAll } from "src/common/decorators";
+import { EnableUsersDto } from "./dtos/enable.dto";
+import { QueryUserDto } from "./dtos/query.dto";
 
-@Controller("admin/user/manage")
+@Controller("admin/user")
 @ApiTags("User Manage API")
-// @UseGuards(JwtAdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 export default class UserController {
   constructor(private readonly studentService: StudentService) {}
 
-  @Get()
-  @ApiFindAll("sinh viên", Student)
-  async getAllUser(@Query() { limit = 10, page = 1 }: { limit?: number; page?: number }) {
+  @ApiQuery({
+    name: "pageSize",
+    type: Number,
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: "orderBy",
+    required: false,
+    example: {
+      createdAt: "asc",
+    },
+  })
+  @ApiQuery({
+    type: QueryUserDto,
+  })
+  @ApiFindAll("User", Student)
+  async getAllUser(@Query() { pageSize = 10, page = 1, orderBy, ...filters }: PaginationDto & QueryUserDto) {
     return await this.studentService.findAll({
-      limit: limit,
-      page: page,
-    });
-  }
-
-  @Post("/filter")
-  // @ApiFilterQuery(PaginationDto)
-  @HttpCode(HttpStatus.OK)
-  async filterUser(@Body() data: FindStudentsMatch, @Param("limit") limit: number, @Param("page") page: number) {
-    return await this.studentService.findAll({
-      where: {
-        mssv: data.mssv,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        gender: data.gender,
-        major: data.major,
-        startYear: data.startYear,
-        class: data.class,
+      pagination: {
+        page: page,
+        pageSize: pageSize,
+        orderBy: orderBy,
+        skip: (page - 1) * pageSize,
       },
-      limit: limit,
-      page: page,
+      where: filters,
     });
   }
 
-  @Put("/validate/:id")
-  async validateUser(@Param("id") id: number, @Req() byAdmin: RequestWithAdmin, @Body() data: ValidateUser) {
-    const user: Student | null = await this.studentService.findOne({ where: { mssv: id } });
-    if (!user) {
-      throw ExceptionFactory.notFoundException({
-        message: `Người dùng với id=${id} không tồn tại`,
-      });
-    }
-
-    await this.studentService.updateById(user.mssv, {
-      validate: data.validate,
+  @Patch("/validate")
+  async validateUser(@Req() byAdmin: RequestWithAdmin, @Body() payload: ValidateUsersDto) {
+    return await this.studentService.updateByIds(payload.ids, {
+      validate: payload.validate,
       validateBy: byAdmin.user.id,
       validateAt: new Date(),
     });
   }
 
-  @Put("/enable/:id")
-  async changeStatus(@Param("id") id: number) {
-    await this.studentService.enable(id);
+  @Patch("/enable")
+  async changeStatus(@Body() payload: EnableUsersDto) {
+    await this.studentService.updateByIds(payload.ids, { enable: payload.enable });
   }
 }

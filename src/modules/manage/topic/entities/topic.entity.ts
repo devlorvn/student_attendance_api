@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToOne,
@@ -26,7 +27,7 @@ export default class Topic {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(() => Event, { cascade: true })
+  @ManyToMany(() => Event, (event) => event.id)
   @JoinTable()
   events: Event[];
 }

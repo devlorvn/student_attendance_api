@@ -14,6 +14,9 @@ import { AppController } from "./app.controller";
 import { UserModule } from "./modules/manage/user/user.module";
 import { EventModule } from "./modules/manage/event/event.module";
 import { TopicModule } from "./modules/manage/topic/topic.module";
+import { RegisterEventModule } from "./modules/registerEvent/registerEvent.module";
+import { NotificationModule } from "./modules/manage/notification/notification.module";
+import { NotificationUserModule } from "./modules/manage/notificationUser/notificationUser.module";
 
 @Module({
   imports: [
@@ -44,6 +47,9 @@ import { TopicModule } from "./modules/manage/topic/topic.module";
     UserModule,
     EventModule,
     TopicModule,
+    RegisterEventModule,
+    NotificationModule,
+    NotificationUserModule,
   ],
   controllers: [AppController],
   providers: [

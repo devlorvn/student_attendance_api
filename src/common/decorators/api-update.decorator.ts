@@ -4,7 +4,7 @@ import { capitalize } from "lodash";
 
 export function ApiUpdate(name: string, type: Function) {
   return applyDecorators(
-    ApiParam({ name: "id", type: Number, example: 1 }),
+    ApiParam({ name: "id", type: String, example: 1 }),
     ApiBody({ type: type }),
     ApiOkResponse({
       description: `Cập nhật tài nguyên thành công.`,

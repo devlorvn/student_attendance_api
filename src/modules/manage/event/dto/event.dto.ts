@@ -1,7 +1,7 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty, ApiQuery } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 import { PaginationDto } from "src/common/dtos";
 import Topic from "../../topic/entities/topic.entity";
 
@@ -83,26 +83,9 @@ export class EventDto {
     example: 0,
   })
   registered: number;
-
-  @ApiProperty({
-    type: Object,
-    example: [
-      {
-        name: "adasdas",
-        id: "asdjkasjd",
-      },
-    ],
-  })
-  topics?: Topic[];
-
-  @ApiProperty({
-    type: String,
-    example: "abc",
-  })
-  createdBy: string;
 }
 
-export class CreateEventDto extends EventDto {
+export class CreateEventDto {
   @ApiProperty({
     type: String,
     example: "abc",
@@ -195,9 +178,14 @@ export class CreateEventDto extends EventDto {
     type: Object,
     example: ["123", "456"],
   })
-  @IsNotEmpty()
-  @IsString()
-  topics?: Topic[];
+  @IsOptional()
+  topics?: Topic["id"][];
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsUUID()
+  createdBy?: string;
 }
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {
@@ -303,41 +291,109 @@ export class UpdateEventDto extends PartialType(CreateEventDto) {
   })
   @IsOptional()
   @IsString()
-  topics?: Topic[];
+  topics?: Topic["id"][];
 
   @Exclude()
   createdBy?: string;
 }
 
 export class QueryEventDto {
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
   @IsString()
   id: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
   @IsString()
   title: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
   @IsString()
   subTitle: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
   @IsString()
   content: string;
+
+  @ApiProperty({
+    example: "abcd1234",
+    required: false,
+  })
   @IsString()
   banner: string;
+
+  @ApiProperty({
+    example: "2023-12-30",
+    required: false,
+  })
   @IsDate()
   startTime: Date;
+
+  @ApiProperty({
+    example: "2023-12-30",
+    required: false,
+  })
   @IsDate()
   endTime: Date;
+
+  @ApiProperty({
+    example: "2023-12-30",
+    required: false,
+  })
   @IsDate()
   startRegistrationDate: Date;
+
+  @ApiProperty({
+    example: "2023-12-30",
+    required: false,
+  })
   @IsDate()
   endRegistrationDate: Date;
+
+  @ApiProperty({
+    example: false,
+    required: false,
+  })
   @IsBoolean()
   registration: boolean;
+
+  @ApiProperty({
+    example: false,
+    required: false,
+  })
   @IsBoolean()
   enable: boolean;
+
+  @ApiProperty({
+    example: 10,
+    required: false,
+  })
   @IsNumber()
   amount: number;
+
+  @ApiProperty({
+    example: 0,
+    required: false,
+  })
   @IsNumber()
   registered: number;
-  @IsString()
-  topics: Topic[];
-  @IsUUID()
-  createdBy: string;
+
+  @ApiProperty({
+    example: ["11", "22"],
+    type: Array,
+    required: false,
+  })
+  @IsArray()
+  topics: Topic["id"][];
 }

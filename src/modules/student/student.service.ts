@@ -4,10 +4,11 @@ import { loadEntityManager } from "src/common/helpers/loadEntityManager.helper";
 import { CreateStudentDto } from "./dtos/student.dto";
 import { Student } from "./entities/student.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from "typeorm";
+import { DeepPartial, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
 import { NullableType } from "src/common/types/nullable.type";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import { PostgresErrorCode } from "src/common/enums/postgresErrorCode.enum";
+import { PaginationDto } from "src/common/dtos";
 
 @Injectable()
 export class StudentService {
@@ -31,18 +32,26 @@ export class StudentService {
     }
   }
 
+  // GET ALL
   async findAll({
+    pagination,
     where,
     fields,
-    limit = 10,
-    page = 1,
   }: {
+    pagination: PaginationDto;
     where?: FindOptionsWhere<Student>;
     fields?: FindOptionsSelect<Student>;
-    limit?: number;
-    page?: number;
-  }) {
-    return await this.studentRepository.find({ where: where, select: fields, take: limit, skip: (page - 1) * limit });
+  }): Promise<Student[]> {
+    return await this.studentRepository.find({
+      where: {
+        ...where,
+        firstName: where?.firstName && ILike(`%${where.firstName}%`),
+      },
+      select: fields,
+      take: pagination.pageSize,
+      skip: pagination.skip,
+      order: pagination.orderBy,
+    });
   }
 
   async findOne({ where, fields }: { where: FindOptionsWhere<Student>; fields?: FindOptionsSelect<Student> }): Promise<NullableType<Student>> {
@@ -69,5 +78,33 @@ export class StudentService {
   async disable(mssv: Student["mssv"]): Promise<Boolean> {
     await this.studentRepository.save({ mssv: mssv, enable: false });
     return true;
+  }
+
+  // VALIDATE USERS
+  /**
+   * @param ids - Array of ID student to update
+   * @param payload - include validate, validateBy, validateAt
+   * @returns void
+   */
+  async updateByIds(mssvArr: Student["mssv"][], payload: DeepPartial<Student>) {
+    const result = await this.studentRepository
+      .createQueryBuilder("student")
+      .update(Student)
+      .set({
+        ...payload,
+      })
+      .where("mssv IN (:...mssvArr)", { mssvArr })
+      .execute();
+
+    if (result.affected == 0) {
+      throw ExceptionFactory.badRequestException({
+        message: `Event với các id không được tìm thấy hoặc không thể cập nhật`,
+        errorCode: -1,
+      });
+    }
+
+    if (result.affected < mssvArr.length) {
+      console.log("Một vài id không được cập nhật do không tìm thấy");
+    }
   }
 }

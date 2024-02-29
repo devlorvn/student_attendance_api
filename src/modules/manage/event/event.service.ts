@@ -1,21 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeepPartial, FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
+import { DeepPartial, FindOptionsOrder, FindOptionsSelect, FindOptionsWhere, ILike, In, Repository } from "typeorm";
 import { NullableType } from "src/common/types";
-import { CreateEventDto, EventDto } from "./dto/event.dto";
+import { CreateEventDto, EventDto, UpdateEventDto } from "./dto/event.dto";
 import Event from "./entities/event.entity";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import { PaginationDto } from "src/common/dtos";
+import TopicService from "../topic/topic.service";
 
 @Injectable()
 export default class EventService {
   constructor(
     @InjectRepository(Event)
-    private eventRepository: Repository<Event>
+    private eventRepository: Repository<Event>,
+    private topicService: TopicService
   ) {}
 
   // CREATE
-  async create(createEventDto: CreateEventDto) {
+  async create(createEventDto: DeepPartial<Event>) {
     const newEvent = this.eventRepository.create(createEventDto);
     return await this.eventRepository.save(newEvent);
   }
@@ -58,7 +60,7 @@ export default class EventService {
 
   // GET BY ID
   async findOneById(id: Event["id"]) {
-    const event = await this.eventRepository.findOne({ where: { id } });
+    const event = await this.eventRepository.findOne({ where: { id }, relations: ["topics", "registers", "registers.mssv"] });
     if (!event)
       throw ExceptionFactory.notFoundException({
         message: "Event không được tìm thấy",
@@ -87,25 +89,37 @@ export default class EventService {
     }
   }
 
-  // ADD COUNT REGISTER
-  async addRegistered(id: Event["id"]) {
-    const event = await this.findOne({ where: { id } });
-    await this.updateById(id, { registered: event.registered + 1 });
-  }
+  // CHANGE COUNT REGISTER
+  /**
+   * @param id - ID event to update
+   * @param amount - greater than 0 to add, less than 0 to deduct
+   * @returns void
+   */
+  async changeNumberRegistered(id: Event["id"], amount: number) {
+    const result = await this.eventRepository
+      .createQueryBuilder("event")
+      .update(Event)
+      .set({
+        registered: () => `GREATEST("registered" + ${amount}, 0)`,
+      })
+      .where("id = :id", { id })
+      .execute();
 
-  // ADD COUNT REGISTER
-  async subRegistered(id: Event["id"]) {
-    const event = await this.findOne({ where: { id } });
-    await this.updateById(id, { registered: event.registered - 1 });
+    if (!result.affected) {
+      throw ExceptionFactory.badRequestException({
+        message: `Event với id = ${id} không được tìm thấy hoặc không thể cập nhật`,
+        errorCode: -1,
+      });
+    }
   }
 
   // CHANGE ENABLE STATUS
-  async changeEnable(id: Event["id"], enable: boolean) {
+  async changeEnableState(id: Event["id"], enable: boolean) {
     await this.updateById(id, { enable });
   }
 
   // CHANGE REGISTRATION STATUS
-  async changeRegistration(id: Event["id"], registration: boolean) {
+  async changeRegistrationState(id: Event["id"], registration: boolean) {
     await this.updateById(id, { registration });
   }
 }

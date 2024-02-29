@@ -1,5 +1,5 @@
 import { RequestWithUser } from "./auth.interface";
-import { Body, Controller, HttpCode, HttpStatus, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Patch, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "src/modules/app/auth/auth.service";
 import { AppAuthGuard } from "src/common/guards/app/app.guard";
 import { CreateStudentDto, UpdatePasswordStudentDto } from "src/modules/student/dtos/student.dto";
@@ -56,7 +56,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put("change-password")
+  @Patch("change-password")
   @HttpCode(HttpStatus.OK)
   async changePassword(@Req() req: RequestWithUser, @Body() data: UpdatePasswordStudentDto) {
     return this.authService.changePassword(req.user, data);

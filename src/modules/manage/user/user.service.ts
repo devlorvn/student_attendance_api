@@ -7,8 +7,6 @@ import { Repository } from "typeorm";
 export default class UserService {
   constructor(
     @InjectRepository(Student)
-    private adminRepository: Repository<Student>
+    private studentRepository: Repository<Student>
   ) {}
-
-  
 }

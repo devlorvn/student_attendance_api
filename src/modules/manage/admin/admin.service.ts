@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import Admin from "./entities/admin.entity";
-import { DeepPartial, FindOptionsSelect, FindOptionsWhere, Repository } from "typeorm";
+import { DeepPartial, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
 import { CreateAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 import { NullableType } from "src/common/types";
 import { AdminErrorCode, PostgresErrorCode } from "src/common/enums";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
+import { PaginationDto } from "src/common/dtos";
 
 @Injectable()
 export default class AdminService {
@@ -41,9 +42,26 @@ export default class AdminService {
   }
 
   // GET ALL
-  async findAll() {
-    const admins = await this.adminRepository.find();
-    return admins;
+  async findAll({
+    pagination,
+    where,
+    fields,
+  }: {
+    pagination: PaginationDto;
+    where?: FindOptionsWhere<Admin>;
+    fields?: FindOptionsSelect<Admin>;
+  }): Promise<Admin[]> {
+    return await this.adminRepository.find({
+      where: {
+        ...where,
+        email: where?.email && ILike(`%${where.email}%`),
+        name: where?.name && ILike(`%${where.name}%`),
+      },
+      select: fields,
+      take: pagination.pageSize,
+      skip: pagination.skip,
+      order: pagination.orderBy,
+    });
   }
 
   // GET BY ID

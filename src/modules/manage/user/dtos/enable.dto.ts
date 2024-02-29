@@ -1,9 +1,8 @@
-import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty } from "class-validator";
 import { Student } from "src/modules/student/entities/student.entity";
 
-export class ValidateUsersDto {
+export class EnableUsersDto {
   @ApiProperty({
     type: Array,
     example: [],
@@ -18,5 +17,5 @@ export class ValidateUsersDto {
   })
   @IsNotEmpty()
   @IsBoolean()
-  validate: boolean;
+  enable: boolean;
 }

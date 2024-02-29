@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DeepPartial, FindOptionsSelect, FindOptionsWhere, ILike, Repository } from "typeorm";
 import PositionAdmin from "./entities/positionAdmin.entity";
 import { CreatePositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
 import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import { AdminErrorCode } from "src/common/enums";
+import { PaginationDto } from "src/common/dtos";
 
 @Injectable()
 export default class PositionAdminService {
@@ -20,16 +21,32 @@ export default class PositionAdminService {
     return newPosition;
   }
 
-  // UPDATE
-  async update(updatePositionDto: UpdatePositionAdminDto) {
-    const { id, ...updateData } = updatePositionDto;
-    await this.positionAdminRepository.update(id, updateData);
+  // UPDATE BY ID
+  async updateById(id: PositionAdmin["id"], payload: DeepPartial<PositionAdmin>) {
+    payload.id = id;
+    return await this.positionAdminRepository.save(payload);
   }
 
   // GET ALL
-  async findAll() {
-    const positions = await this.positionAdminRepository.find();
-    return positions;
+  async findAll({
+    pagination,
+    where,
+    fields,
+  }: {
+    pagination: PaginationDto;
+    where?: FindOptionsWhere<PositionAdmin>;
+    fields?: FindOptionsSelect<PositionAdmin>;
+  }): Promise<PositionAdmin[]> {
+    return await this.positionAdminRepository.find({
+      where: {
+        ...where,
+        name: where?.name && ILike(`%${where.name}%`),
+      },
+      select: fields,
+      take: pagination.pageSize,
+      skip: pagination.skip,
+      order: pagination.orderBy,
+    });
   }
 
   // GET BY ID
