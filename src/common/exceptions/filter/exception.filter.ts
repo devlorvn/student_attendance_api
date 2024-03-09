@@ -14,7 +14,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const status = exception instanceof HttpException ? 200 : HttpStatus.INTERNAL_SERVER_ERROR;
     const message =
-      exception instanceof HttpException ? (exception.getResponse() as IError) : { message: (exception as Error).message, errorCode: null };
+      exception instanceof HttpException ? (exception.getResponse() as IError) : { message: 'Lỗi hệ thống.' };
 
     const responseData = {
       status: "error",

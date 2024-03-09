@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileService } from "./file.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { ApiConsumes, ApiBody } from "@nestjs/swagger";
+import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
 import { DeleteFileDto } from "./dto/delete-file.dto";
 
 @Controller("file")
+@ApiTags("File")
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
@@ -24,6 +25,10 @@ export class FileController {
         folder: {
           type: "string",
         },
+        isPrivate: {
+          type: "boolean",
+          default: false,
+        },
         file: {
           type: "string",
           format: "binary",
@@ -37,11 +42,12 @@ export class FileController {
     @Body()
     body: {
       folder: string;
+      isPrivate: boolean;
     }
   ) {
     const folder = body.folder ? body.folder + "/" : "";
 
-    return this.fileService.uploadFile(file.buffer, folder + file.originalname);
+    return this.fileService.uploadFile(file.buffer, folder + file.originalname, body.isPrivate);
   }
 
   @Post("upload-multiple")
@@ -53,6 +59,10 @@ export class FileController {
       properties: {
         folder: {
           type: "string",
+        },
+        isPrivate: {
+          type: "boolean",
+          default: false,
         },
         files: {
           type: "array",
@@ -70,11 +80,12 @@ export class FileController {
     @Body()
     body: {
       folder: string;
+      isPrivate: boolean;
     }
   ) {
     const folder = body.folder ? body.folder + "/" : "";
-    const prom = files.map((file) => this.fileService.uploadFile(file.buffer, folder + file.originalname));
-    return Promise.allSettled(prom);
+    const prom = files.map((file) => this.fileService.uploadFile(file.buffer, folder + file.originalname, body.isPrivate));
+    return Promise.all(prom);
   }
 
   @Delete("delete")
