@@ -33,7 +33,8 @@ export default class AdminService {
 
   // UPDATE BY ID
   async updateById(id: Admin["id"], payload: DeepPartial<Admin>) {
-    return await this.adminRepository.save({ id, ...payload });
+    const result = await this.adminRepository.save({ ...payload, id });
+    return await this.adminRepository.findOne({ where: { id } });
   }
 
   // UPDATE BY ADMIN OBJECT
@@ -61,16 +62,19 @@ export default class AdminService {
       take: pagination.pageSize,
       skip: pagination.skip,
       order: pagination.orderBy,
+      relations: ["positionId"],
     });
   }
 
   // GET BY ID
   async findOneById(id: Admin["id"]) {
-    const user = await this.adminRepository.findOne({ where: { id } });
+    const user = await this.adminRepository.findOne({ where: { id }, relations: ["positionId"] });
     if (!user)
       throw ExceptionFactory.notFoundException({
         message: "Admin không được tìm thấy",
       });
+    delete user.password;
+    delete user.more_info;
     return user;
   }
 

@@ -17,7 +17,7 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
     private readonly adminService: AdminService
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromHeader("token"),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get("JWT_SECRET"),
       passReqToCallback: true,
@@ -32,12 +32,21 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
         id: payload.key,
       },
     });
-    if (!admin && !compareToken(admin.more_info.token, getTokenFromHeader(req, "token"))) {
+
+    if (!admin) {
       throw ExceptionFactory.unauthorizedException({
         message: "Token đã hết hạn hoặc không hợp lệ",
         errorCode: -1,
       });
     }
+
+    if (!compareToken(admin.more_info.token, getTokenFromHeader(req, "authorization").split(" ")[1])) {
+      throw ExceptionFactory.unauthorizedException({
+        message: "Token đã hết hạn hoặc không hợp lệ",
+        errorCode: -1,
+      });
+    }
+
     return admin;
   }
 

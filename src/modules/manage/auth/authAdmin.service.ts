@@ -44,14 +44,18 @@ export class AuthService {
       this.configService.get("JWT_SECRET"),
       this.configService.get("JWT_TOKEN_EXPIRE_TIME")
     );
-    await this.adminService.updateById(id, {
+    const user = await this.adminService.updateById(id, {
       more_info: {
         token: token,
       },
     });
-
     return {
       token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
     };
   }
 
@@ -61,8 +65,7 @@ export class AuthService {
         message: "Tài khoản hoặc mật khẩu không chính xác.",
       });
     }
-
-    await this.adminService.update(admin, { password: changePasswordData.newPassord });
+    const result = await this.adminService.update(admin, { password: changePasswordData.newPassword });
   }
 
   public async logout(id: Admin["id"]): Promise<void> {

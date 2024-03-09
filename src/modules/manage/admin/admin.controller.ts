@@ -3,12 +3,12 @@ import AdminService from "./admin.service";
 import { AdminDto, CreateAdminDto, QueryAdminDto, UpdateAdminDto } from "./dto/admin.dto";
 import PositionAdminService from "../positionAdmin/positionAdmin.service";
 import { ApiQuery, ApiTags } from "@nestjs/swagger";
-import { JwtAdminAuthGuard } from "src/common/guards";
 import { ApiCreate, ApiDelete, ApiFindAll, ApiFindOne, ApiUpdate } from "src/common/decorators";
 import { PaginationDto } from "src/common/dtos";
+import { JwtAdminAuthGuard } from "src/common/guards";
 
 @Controller("admin/manage")
-// @UseGuards(JwtAdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 @ApiTags("Admin Manage API")
 export default class AdminController {
   constructor(
@@ -63,10 +63,9 @@ export default class AdminController {
   }
 
   @ApiUpdate("Admin", UpdateAdminDto)
-  async updateAdmin(@Body() admin: UpdateAdminDto) {
+  async updateAdmin(@Body() admin: UpdateAdminDto, @Param("id") id: string) {
     await this.adminPositionService.exist(admin.positionId);
-    const { id, ...data } = admin;
-    return this.adminService.updateById(id, data);
+    return this.adminService.updateById(id, admin);
   }
 
   @ApiDelete("Admin")

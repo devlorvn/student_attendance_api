@@ -2,12 +2,12 @@ import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Use
 import PositionAdminService from "./positionAdmin.service";
 import { CreatePositionAdminDto, PositionAdminDto, QueryPositionAdminDto, UpdatePositionAdminDto } from "./dtos/positionAdmin.dto";
 import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AdminAuthGuard } from "src/common/guards";
+import { JwtAdminAuthGuard } from "src/common/guards";
 import { ApiCreate, ApiDelete, ApiFindAll, ApiFindOne, ApiUpdate } from "src/common/decorators";
 import { PaginationDto } from "src/common/dtos";
 
 @Controller("admin/positions")
-// @UseGuards(AdminAuthGuard)
+@UseGuards(JwtAdminAuthGuard)
 @ApiTags("Admin Position Manage API")
 export default class PositionAdminController {
   constructor(private readonly positionAdminService: PositionAdminService) {}
