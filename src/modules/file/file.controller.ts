@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors, ParseBoolPipe } from "@nestjs/common";
+import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors, ParseBoolPipe, Patch } from "@nestjs/common";
 import { FileService } from "./file.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
@@ -78,7 +78,7 @@ export class FileController {
     return Promise.all(prom);
   }
 
-  @Delete("delete")
+  @Patch("delete")
   @ApiBody({
     schema: {
       required: ["key"],
