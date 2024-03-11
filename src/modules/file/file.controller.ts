@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors, ParseBoolPipe } from "@nestjs/common";
 import { FileService } from "./file.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
@@ -37,17 +37,10 @@ export class FileController {
     },
   })
   @UseInterceptors(FileInterceptor("file"))
-  uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Body()
-    body: {
-      folder: string;
-      isPrivate: boolean;
-    }
-  ) {
-    const folder = body.folder ? body.folder + "/" : "";
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Body("folder") folder: string, @Body("isPrivate", ParseBoolPipe) isPrivate: boolean) {
+    folder = folder ? folder + "/" : "";
 
-    return this.fileService.uploadFile(file.buffer, folder + file.originalname, body.isPrivate);
+    return this.fileService.uploadFile(file.buffer, folder + file.originalname, isPrivate);
   }
 
   @Post("upload-multiple")
@@ -77,14 +70,11 @@ export class FileController {
   @UseInterceptors(FilesInterceptor("files"))
   uploadFiles(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body()
-    body: {
-      folder: string;
-      isPrivate: boolean;
-    }
+    @Body("folder") folder: string,
+    @Body("isPrivate", ParseBoolPipe) isPrivate: boolean
   ) {
-    const folder = body.folder ? body.folder + "/" : "";
-    const prom = files.map((file) => this.fileService.uploadFile(file.buffer, folder + file.originalname, body.isPrivate));
+    folder = folder ? folder + "/" : "";
+    const prom = files.map((file) => this.fileService.uploadFile(file.buffer, folder + file.originalname, Boolean(isPrivate)));
     return Promise.all(prom);
   }
 
