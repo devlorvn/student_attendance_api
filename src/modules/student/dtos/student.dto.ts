@@ -111,6 +111,8 @@ export class UpdatePasswordStudentDto {
 export class UpdateStudentDto extends PartialType(CreateStudentDto) {
   @Exclude()
   password?: string;
+
+  images?: string[];
 }
 
 export class FindStudentsMatch extends PartialType(CreateStudentDto) {

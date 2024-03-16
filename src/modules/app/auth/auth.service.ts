@@ -31,9 +31,18 @@ export class AuthService {
       },
     });
 
+    console.log(user);
+
     if (!user || !comparePass(password, user.password)) {
       throw ExceptionFactory.badRequestException({
         message: "Tài khoản hoặc mật khẩu không chính xác.",
+        errorCode: -1,
+      });
+    }
+
+    if (!user.enable) {
+      throw ExceptionFactory.forbiddenException({
+        message: "Tài khoản chưa được kích hoạt hoặc đã vô hiệu hóa.",
         errorCode: -1,
       });
     }

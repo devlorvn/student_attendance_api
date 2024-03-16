@@ -65,10 +65,6 @@ export class CreateAdminDto {
 }
 
 export class UpdateAdminDto extends PartialType(CreateAdminDto) {
-  @IsNotEmpty()
-  @IsNumber()
-  id: string;
-
   @IsString()
   @IsOptional()
   name: string;
@@ -112,7 +108,7 @@ export class UpdatePasswordAdminDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
-  newPassord: string;
+  newPassword: string;
 }
 
 export class QueryAdminDto {
