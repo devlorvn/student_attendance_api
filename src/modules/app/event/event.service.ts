@@ -33,12 +33,16 @@ export class EventService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} event`;
+  findOne(id: string) {
+    return this.eventRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ["topics"],
+    });
   }
 
   async topics() {
-    console.log("here");
     return this.topicRepository.find({
       select: {
         id: true,
