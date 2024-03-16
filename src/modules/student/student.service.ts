@@ -18,7 +18,7 @@ export class StudentService {
     private readonly studentRepository: Repository<Student>
   ) {}
 
-  async create(createUserDto: CreateStudentDto) {
+  async create(createUserDto: DeepPartial<Student>) {
     try {
       return this.studentRepository.save(this.studentRepository.create(createUserDto));
     } catch (error) {

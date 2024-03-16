@@ -26,12 +26,26 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
 
   async validate(req: Request, payload: ITokenPayload) {
     this.uuidValidate(payload.key);
-
     const admin: Admin | null = await this.adminService.findOne({
       where: {
         id: payload.key,
       },
+      fields: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        more_info: {
+          token: true,
+          forgetPasswordToken: true,
+        },
+        enable: true,
+        permissions: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+    console.log(admin);
 
     if (!admin) {
       throw ExceptionFactory.unauthorizedException({

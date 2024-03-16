@@ -15,7 +15,7 @@ export default class PositionAdmin {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => Admin, (admin: Admin) => admin.id)
-  @JoinColumn()
-  admin: Admin["id"];
+  // @OneToOne(() => Admin, (admin: Admin) => admin.id)
+  // @JoinColumn()
+  // admin: Admin["id"];
 }

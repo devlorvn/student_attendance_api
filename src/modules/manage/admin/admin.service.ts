@@ -68,7 +68,7 @@ export default class AdminService {
 
   // GET BY ID
   async findOneById(id: Admin["id"]) {
-    const user = await this.adminRepository.findOne({ where: { id }, relations: ["positionId"] });
+    const user = await this.adminRepository.findOne({ where: { id } });
     if (!user)
       throw ExceptionFactory.notFoundException({
         message: "Admin không được tìm thấy",

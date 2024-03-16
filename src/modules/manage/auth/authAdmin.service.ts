@@ -32,6 +32,12 @@ export class AuthService {
       });
     }
 
+    if (!admin.enable) {
+      throw ExceptionFactory.forbiddenException({
+        message: "Tài khoản không được kích hoạt.",
+      });
+    }
+
     delete admin.password;
 
     return admin;

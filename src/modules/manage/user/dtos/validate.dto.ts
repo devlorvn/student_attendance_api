@@ -1,6 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { UserGender } from "src/common/enums";
 import { Student } from "src/modules/student/entities/student.entity";
 
@@ -10,7 +10,7 @@ export class ValidateUsersDto {
     example: [],
   })
   @IsNotEmpty()
-  @IsBoolean()
+  @IsArray()
   ids: Student["mssv"][];
 
   @ApiProperty({
