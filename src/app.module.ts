@@ -17,7 +17,9 @@ import { TopicModule } from "./modules/manage/topic/topic.module";
 import { RegisterEventModule } from "./modules/registerEvent/registerEvent.module";
 import { NotificationModule } from "./modules/manage/notification/notification.module";
 import { NotificationUserModule } from "./modules/manage/notificationUser/notificationUser.module";
-import { FileModule } from './modules/file/file.module';
+import { FileModule } from "./modules/file/file.module";
+import { AccountModule } from "./modules/app/account/account.module";
+import { EventModule as AppEventModule } from "./modules/app/event/event.module";
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { FileModule } from './modules/file/file.module';
     NotificationModule,
     NotificationUserModule,
     FileModule,
+    AccountModule,
+    AppEventModule,
   ],
   controllers: [AppController],
   providers: [

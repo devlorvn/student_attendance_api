@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   app.setGlobalPrefix(configService.get("API_PREFIX"));
-  // app.enableCors({ origin: "http://localhost:3000" });
+  app.enableCors({ origin: ["http://localhost:3000", "http://localhost:5173"] });
   app.useGlobalInterceptors(new TransformInterceptor());
   const PORT = configService.get("PORT") || 3000;
 
