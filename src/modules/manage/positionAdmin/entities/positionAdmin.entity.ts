@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import Admin from "../../admin/entities/admin.entity";
 
 @Entity("position_admin")
 export default class PositionAdmin {
@@ -13,4 +14,8 @@ export default class PositionAdmin {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // @OneToOne(() => Admin, (admin: Admin) => admin.id)
+  // @JoinColumn()
+  // admin: Admin["id"];
 }

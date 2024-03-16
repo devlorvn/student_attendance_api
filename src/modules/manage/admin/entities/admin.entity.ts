@@ -1,7 +1,16 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import * as bcrypt from "bcryptjs";
 import PositionAdmin from "../../positionAdmin/entities/positionAdmin.entity";
-import { Exclude } from "class-transformer";
 
 @Entity("admin")
 export default class Admin {
@@ -17,7 +26,8 @@ export default class Admin {
   @Column({ length: 255, name: "password", type: "varchar" })
   password: string;
 
-  @OneToOne(() => PositionAdmin, (position: PositionAdmin) => position.id)
+  @ManyToOne(() => PositionAdmin, (position: PositionAdmin) => position.id)
+  @JoinColumn()
   positionId: string;
 
   @Column({ type: "jsonb", nullable: true })

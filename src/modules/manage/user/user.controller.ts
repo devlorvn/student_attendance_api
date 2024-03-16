@@ -1,14 +1,15 @@
 import { Body, Controller, Param, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiQuery, ApiTags } from "@nestjs/swagger";
-import { ValidateUsersDto } from "./dtos/validate.dto";
+import { RegisterWithValidateDto, ValidateUsersDto } from "./dtos/validate.dto";
 import { StudentService } from "src/modules/student/student.service";
 import { Student } from "src/modules/student/entities/student.entity";
 import { RequestWithAdmin } from "../auth/authAdmin.interface";
 import { JwtAdminAuthGuard } from "src/common/guards";
 import { PaginationDto } from "src/common/dtos";
-import { ApiFindAll } from "src/common/decorators";
+import { ApiCreate, ApiFindAll, ApiFindOne } from "src/common/decorators";
 import { EnableUsersDto } from "./dtos/enable.dto";
 import { QueryUserDto } from "./dtos/query.dto";
+import { UpdateStudentDto } from "src/modules/student/dtos/student.dto";
 
 @Controller("admin/user")
 @ApiTags("User Manage API")
@@ -51,6 +52,24 @@ export default class UserController {
     });
   }
 
+  @ApiFindOne("User", Student)
+  async getUser(@Param("id") id: number) {
+    return await this.studentService.findOne({ where: { mssv: id } });
+  }
+
+  @ApiCreate("User", RegisterWithValidateDto)
+  async createUser(@Body() user: RegisterWithValidateDto, @Req() byAdmin: RequestWithAdmin) {
+    const { autoValidate, ...userData } = user;
+    const newUser = await this.studentService.create(userData);
+    if (newUser.mssv && autoValidate) {
+      await this.studentService.updateByIds([newUser.mssv], {
+        validate: true,
+        validateBy: byAdmin.user.id,
+        validateAt: new Date(),
+      });
+    }
+  }
+
   @Patch("/validate")
   async validateUser(@Req() byAdmin: RequestWithAdmin, @Body() payload: ValidateUsersDto) {
     return await this.studentService.updateByIds(payload.ids, {
@@ -63,5 +82,12 @@ export default class UserController {
   @Patch("/enable")
   async changeStatus(@Body() payload: EnableUsersDto) {
     await this.studentService.updateByIds(payload.ids, { enable: payload.enable });
+  }
+
+  @Patch("/:id")
+  async updateUser(@Body() payload: UpdateStudentDto, @Param("id") id: number) {
+    // delete payload.password;
+    // delete payload.mssv;
+    await this.studentService.updateById(id, payload);
   }
 }

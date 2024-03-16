@@ -6,9 +6,19 @@ export class LoginAdminResponse extends BaseResponseEntity {
     type: Object,
     example: {
       token: "abc",
+      user: {
+        id: "123456789",
+        name: "abc",
+        email: "abc@gmail.com",
+      },
     },
   })
   data: {
     token: string;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
   };
 }
