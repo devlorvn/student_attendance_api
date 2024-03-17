@@ -61,22 +61,8 @@ export default class RegisterEventService {
   async findById(id: RegisterEvent["id"]) {
     const registered = await this.registerEventRepository.findOne({
       where: { id },
-      relations: ["eventId"],
+      relations: ["eventId", "mssv"],
     });
-    // const registered = await this.registerEventRepository
-    //   .createQueryBuilder("register_event")
-    //   .leftJoinAndSelect("register_event.eventId", "eventId")
-    //   .select([
-    //     "register_event.id",
-    //     "eventId.id",
-    //     "register_event.mssv",
-    //     "register_event.attendance",
-    //     "register_event.attendanceImage",
-    //     "register_event.createdAt",
-    //     "register_event.updatedAt",
-    //   ])
-    //   .where("register_event.id = :id", { id })
-    //   .getOne();
 
     if (!registered)
       throw ExceptionFactory.notFoundException({

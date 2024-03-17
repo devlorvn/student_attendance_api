@@ -20,7 +20,7 @@ export default class RegisterEvent {
   @PrimaryGeneratedColumn("uuid")
   id?: string;
 
-  @ManyToOne(() => Event, (event) => event.id)
+  @ManyToOne(() => Event, (event) => event.id, { onDelete: "CASCADE" })
   @JoinColumn({
     name: "event_id",
   })

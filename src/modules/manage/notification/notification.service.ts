@@ -6,6 +6,7 @@ import { ExceptionFactory } from "src/common/exceptions/exceptionsFactory";
 import { PaginationDto } from "src/common/dtos";
 import Notification from "./entities/notification.entity";
 import { CreateNotificationDto } from "./dto/notification.dto";
+import Event from "../event/entities/event.entity";
 
 @Injectable()
 export default class NotificationService {
@@ -17,6 +18,15 @@ export default class NotificationService {
   // CREATE
   async create(createNotificationDto: CreateNotificationDto) {
     const newNotification = this.notificationRepository.create(createNotificationDto);
+    return await this.notificationRepository.save(newNotification);
+  }
+
+  async createDefault(payload: { eventId: string; eventTitle: string }) {
+    const newNotification = this.notificationRepository.create({
+      title: "Bạn đã được đăng kí tham gia sự kiện",
+      content: `Sự kiện đã được đăng kí: ${payload.eventTitle}. Vui lòng xem chi tiết sự kiện tại mục các sự kiện đã đăng kí`,
+      eventId: payload.eventId,
+    });
     return await this.notificationRepository.save(newNotification);
   }
 
@@ -91,10 +101,13 @@ export default class NotificationService {
     }
   }
 
-  // FIND BY ID ARRAY
-  async findByIds(ids: Notification["id"][]) {
-    return await this.notificationRepository.findBy({
-      id: In(ids),
-    });
+  // DELETE
+  async deleteByEventId(eventId: Event["id"]) {
+    const deleteResult = await this.notificationRepository
+      .createQueryBuilder("notification")
+      .delete()
+      .from(Notification)
+      .where("event_id = :eventId", { eventId })
+      .execute();
   }
 }

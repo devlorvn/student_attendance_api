@@ -1,6 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 import Notification from "../../notification/entities/notification.entity";
 import { Student } from "src/modules/student/entities/student.entity";
 
@@ -48,6 +48,25 @@ export class CreateNotificationUserDto extends NotificationUserDto {
   seen: boolean;
 }
 
+export class CreateMultiNotificationUserDto {
+  @ApiProperty({
+    name: "notificationId",
+    type: String,
+    example: "abc",
+  })
+  @IsNotEmpty()
+  @IsString()
+  notificationId: Notification["id"];
+
+  @ApiProperty({
+    name: "mssv",
+    type: Array,
+    example: [1231, 1212],
+  })
+  @IsArray()
+  mssv: Student["mssv"][];
+}
+
 export class UpdateNotificationUserDto extends PartialType(CreateNotificationUserDto) {
   @ApiProperty({
     name: "notificationId",
@@ -77,23 +96,13 @@ export class UpdateNotificationUserDto extends PartialType(CreateNotificationUse
 
 export class QueryNotificationUserDto {
   @ApiProperty({
-    name: "title",
+    name: "id",
     type: String,
     example: "abc",
     required: false,
   })
   @IsUUID()
   id: string;
-
-  @ApiProperty({
-    name: "notificationId",
-    type: String,
-    example: "abc",
-    required: false,
-  })
-  @IsNotEmpty()
-  @IsString()
-  notificationId: Notification["id"];
 
   @ApiProperty({
     name: "mssv",
@@ -103,6 +112,26 @@ export class QueryNotificationUserDto {
   })
   @IsString()
   mssv: Student["mssv"];
+
+  @ApiProperty({
+    name: "seen",
+    type: Boolean,
+    example: "abc",
+    required: false,
+  })
+  @IsBoolean()
+  seen: boolean;
+}
+
+export class MarkAsReadDto {
+  @ApiProperty({
+    name: "id",
+    type: String,
+    example: "abc",
+    required: false,
+  })
+  @IsUUID()
+  id: string;
 
   @ApiProperty({
     name: "seen",
