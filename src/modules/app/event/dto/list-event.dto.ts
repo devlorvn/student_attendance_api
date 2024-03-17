@@ -1,5 +1,5 @@
-import { Transform } from "class-transformer";
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class ListEventDto {
   @IsOptional()
@@ -10,4 +10,9 @@ export class ListEventDto {
   @IsNumber()
   @Transform(({ value }) => Number(value))
   page: number = 1;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  registered: string = "false";
 }
