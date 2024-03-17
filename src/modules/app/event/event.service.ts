@@ -5,6 +5,9 @@ import Event from "src/modules/manage/event/entities/event.entity";
 import Topic from "src/modules/manage/topic/entities/topic.entity";
 import { Student } from "src/modules/student/entities/student.entity";
 import { ListEventDto } from "./dto/list-event.dto";
+import { StorageService } from "src/common/providers/storage.service";
+import { ConfigService } from "@nestjs/config";
+import RegisterEvent from "src/modules/registerEvent/entities/registerEvent.entity";
 
 @Injectable()
 export class EventService {
@@ -12,7 +15,11 @@ export class EventService {
     @InjectRepository(Event)
     private eventRepository: Repository<Event>,
     @InjectRepository(Topic)
-    private topicRepository: Repository<Topic>
+    private topicRepository: Repository<Topic>,
+    @InjectRepository(RegisterEvent)
+    private registerEventRepository: Repository<RegisterEvent>,
+    private storageService: StorageService,
+    private readonly configService: ConfigService
   ) {}
 
   async findAll(mssv: Student["mssv"], { page, topic, registered }: ListEventDto) {
@@ -24,7 +31,7 @@ export class EventService {
         registers: {
           mssv: registered === "true" ? mssv : undefined,
         },
-        enable: true
+        enable: true,
       },
       take: 10,
       skip: (page - 1) * 10,
@@ -80,5 +87,25 @@ export class EventService {
       })),
       count,
     };
+  }
+
+  async uploadFilePrivate(imageBuffer: Buffer, filename: string) {
+    filename = `private/${filename}`;
+    await this.storageService.uploadPublicFile(imageBuffer, filename);
+    return {
+      url: `${this.configService.get("S3_HOST_URL")}/${filename}`,
+    };
+  }
+
+  async updateAttendance(mssv: Student["mssv"], eventId: Event["id"], imageURL: RegisterEvent["attendanceImage"]) {
+    const foundRegister = await this.registerEventRepository.findOne({
+      where: {
+        eventId: eventId,
+        mssv,
+      },
+    });
+    let updateResult: RegisterEvent;
+    if (foundRegister) updateResult = await this.registerEventRepository.save({ ...foundRegister, attendanceImage: imageURL });
+    return updateResult;
   }
 }
