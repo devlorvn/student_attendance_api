@@ -5,11 +5,10 @@ import { join } from "path";
 @Injectable()
 export class FaceDetectionService {
   constructor() {
-    const modelsPath = join(__dirname, "../assets/", "models");
-    console.log(modelsPath);
-    faceapi.nets.ssdMobilenetv1.loadFromUri(modelsPath);
-    faceapi.nets.faceLandmark68Net.loadFromUri(modelsPath);
-    faceapi.nets.faceRecognitionNet.loadFromUri(modelsPath);
+    const modelsPath = "public/assets/" + "models";
+    faceapi.nets.ssdMobilenetv1.loadFromDisk(modelsPath);
+    faceapi.nets.faceLandmark68Net.loadFromDisk(modelsPath);
+    faceapi.nets.faceRecognitionNet.loadFromDisk(modelsPath);
   }
 
   async markLabelWithImages(payload: { mssv: number; images: string[] }[]) {
@@ -18,8 +17,8 @@ export class FaceDetectionService {
       let imgFetch;
       let detections;
       data.images.forEach(async (image) => {
-        imgFetch = await faceapi.fetchImage(`https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/${image}`);
-        // imgFetch = await faceapi.fetchImage(`../assets/images/${image}`);
+        imgFetch = await faceapi.fetchImage(`https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/vannghe.jpg`);
+        // imgFetch = await faceapi.fetchImage(join(__dirname, "../../../public/assets", "models"));
         detections = await faceapi.detectSingleFace(imgFetch).withFaceLandmarks().withFaceDescriptor();
         descriptions.push(detections.descriptor);
       });
