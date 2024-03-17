@@ -9,6 +9,7 @@ import { RequestWithAdmin } from "../auth/authAdmin.interface";
 import TopicService from "../topic/topic.service";
 import Topic from "../topic/entities/topic.entity";
 import Event from "./entities/event.entity";
+import NotificationService from "../notification/notification.service";
 
 @Controller("admin/event")
 @UseGuards(JwtAdminAuthGuard)
@@ -16,7 +17,8 @@ import Event from "./entities/event.entity";
 export default class EventController {
   constructor(
     private readonly eventService: EventService,
-    private readonly topicService: TopicService
+    private readonly topicService: TopicService,
+    private readonly notificationService: NotificationService
   ) {}
 
   @ApiQuery({
@@ -77,7 +79,8 @@ export default class EventController {
 
   @ApiDelete("Event")
   async deleteEvent(@Param("id") id: string) {
-    return this.eventService.delete(id);
+    await this.eventService.delete(id);
+    await this.notificationService.deleteByEventId(id);
   }
 
   @ApiFindOne("Event", EventDto)

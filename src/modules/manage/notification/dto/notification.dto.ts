@@ -1,10 +1,10 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 
 export class NotificationDto {
   @IsUUID()
-  id: string;
+  id?: string;
 
   @IsString()
   title: string;
@@ -12,20 +12,11 @@ export class NotificationDto {
   @IsString()
   content: string;
 
-  @IsBoolean()
-  status: boolean;
-
-  @IsObject()
-  data: {};
-
-  @IsObject()
-  to: {};
-
-  @IsObject()
-  schedule: {};
+  @IsUUID()
+  eventId: string;
 
   @IsDate()
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export class CreateNotificationDto extends NotificationDto {
@@ -47,36 +38,12 @@ export class CreateNotificationDto extends NotificationDto {
   content: string;
 
   @ApiProperty({
-    name: "status",
-    type: Boolean,
+    name: "eventId",
+    type: String,
     example: "abc",
   })
-  @IsBoolean()
-  status: boolean;
-
-  @ApiProperty({
-    name: "data",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  data: {};
-
-  @ApiProperty({
-    name: "to",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  to: {};
-
-  @ApiProperty({
-    name: "schedule",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  schedule: {};
+  @IsUUID()
+  eventId: string;
 }
 
 export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
@@ -97,41 +64,17 @@ export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {
   content: string;
 
   @ApiProperty({
-    name: "status",
-    type: Boolean,
+    name: "eventId",
+    type: String,
     example: "abc",
   })
-  @IsBoolean()
-  status: boolean;
-
-  @ApiProperty({
-    name: "data",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  data: {};
-
-  @ApiProperty({
-    name: "to",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  to: {};
-
-  @ApiProperty({
-    name: "schedule",
-    type: Object,
-    example: {},
-  })
-  @IsObject()
-  schedule: {};
+  @IsUUID()
+  eventId: string;
 }
 
 export class QueryNotificationDto {
   @ApiProperty({
-    name: "title",
+    name: "id",
     type: String,
     example: "abc",
     required: false,
@@ -158,38 +101,11 @@ export class QueryNotificationDto {
   content: string;
 
   @ApiProperty({
-    name: "status",
-    type: Boolean,
+    name: "eventId",
+    type: String,
     example: "abc",
     required: false,
   })
-  @IsBoolean()
-  status: boolean;
-
-  @ApiProperty({
-    name: "data",
-    type: Object,
-    example: {},
-    required: false,
-  })
-  @IsObject()
-  data: {};
-
-  @ApiProperty({
-    name: "to",
-    type: Object,
-    example: {},
-    required: false,
-  })
-  @IsObject()
-  to: {};
-
-  @ApiProperty({
-    name: "schedule",
-    type: Object,
-    example: {},
-    required: false,
-  })
-  @IsObject()
-  schedule: {};
+  @IsUUID()
+  eventId: string;
 }

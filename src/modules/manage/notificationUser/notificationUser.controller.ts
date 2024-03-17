@@ -1,21 +1,21 @@
-import { Body, Controller, Param, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiQuery, ApiTags } from "@nestjs/swagger";
-import { JwtAdminAuthGuard } from "src/common/guards";
-import { ApiCreate, ApiDelete, ApiFindAll, ApiFindOne, ApiUpdate } from "src/common/decorators";
+import { JwtAdminAuthGuard, JwtAuthGuard } from "src/common/guards";
 import { PaginationDto } from "src/common/dtos";
 import NotificationUserService from "./notificationUser.service";
-import { CreateNotificationUserDto, NotificationUserDto, QueryNotificationUserDto, UpdateNotificationUserDto } from "./dto/notificationUser.dto";
+import { MarkAsReadDto, QueryNotificationUserDto } from "./dto/notificationUser.dto";
+import { RequestWithUser } from "src/modules/app/auth/auth.interface";
 
-@Controller("admin/notification_user")
-@UseGuards(JwtAdminAuthGuard)
-@ApiTags("NotificationUser Manage API")
+@Controller("app/notification_user")
+@UseGuards(JwtAuthGuard)
+@ApiTags("NotificationUser API")
 export default class NotificationUserController {
   constructor(private readonly notificationUserService: NotificationUserService) {}
 
-  @ApiFindOne("NotificationUser", NotificationUserDto)
-  async getEventById(@Param("id") id: string) {
-    return this.notificationUserService.findOneById(id);
-  }
+  // @ApiFindOne("NotificationUser", NotificationUserDto)
+  // async getEventById(@Param("id") id: string) {
+  //   return this.notificationUserService.findOneById(id);
+  // }
 
   @ApiQuery({
     name: "pageSize",
@@ -39,8 +39,11 @@ export default class NotificationUserController {
   @ApiQuery({
     type: QueryNotificationUserDto,
   })
-  @ApiFindAll("NotificationUser", NotificationUserDto)
-  async getAllNotificationUser(@Query() { pageSize = 10, page = 1, orderBy, ...filters }: PaginationDto & QueryNotificationUserDto) {
+  @Get()
+  async getAllNotificationUser(
+    @Query() { pageSize, page, orderBy, ...filters }: PaginationDto & QueryNotificationUserDto,
+    @Req() { user }: RequestWithUser
+  ) {
     // console.log("\x1b[31m%s\x1b[0m", filters);
     // console.log("\x1b[36m%s\x1b[0m", { page, pageSize, orderBy });
     return this.notificationUserService.findAll({
@@ -48,24 +51,27 @@ export default class NotificationUserController {
         page: page,
         pageSize: pageSize,
         orderBy: orderBy,
-        skip: (page - 1) * pageSize,
+        skip: (page - 1) * pageSize || 0,
       },
-      where: filters,
+      where: {
+        ...filters,
+        mssv: user.mssv,
+      },
     });
   }
 
-  @ApiCreate("NotificationUser", CreateNotificationUserDto)
-  async createEvent(@Body() event: CreateNotificationUserDto) {
-    return this.notificationUserService.create(event);
+  @Patch("/mark_read_all")
+  async markAsReadAll(@Req() req: RequestWithUser) {
+    return await this.notificationUserService.markAsReadAll(req.user.mssv);
   }
 
-  @ApiUpdate("NotificationUser", UpdateNotificationUserDto)
-  async updateEvent(@Body() event: UpdateNotificationUserDto, @Param("id") id: string) {
-    return this.notificationUserService.updateById(id, event);
+  @Patch("/mark_read")
+  async markAsRead(@Body() payload: MarkAsReadDto) {
+    return await this.notificationUserService.markAsRead(payload.seen, payload.id);
   }
 
-  @ApiDelete("NotificationUser")
-  async deleteEvent(@Param("id") id: string) {
-    return this.notificationUserService.delete(id);
+  @Delete("/all")
+  async deteleAllRead(@Req() req: RequestWithUser) {
+    return await this.notificationUserService.deteleAllRead(req.user.mssv);
   }
 }

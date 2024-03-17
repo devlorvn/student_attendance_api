@@ -20,7 +20,7 @@ export default class NotificationUser {
   @PrimaryGeneratedColumn("uuid")
   id?: string;
 
-  @ManyToOne(() => Notification, (notify) => notify.id)
+  @ManyToOne(() => Notification, (notify) => notify.id, { onDelete: "CASCADE" })
   @JoinColumn({
     name: "notification_id",
   })
