@@ -12,7 +12,6 @@ export class FileService {
 
   async uploadFile(imageBuffer: Buffer, filename: string, _private: boolean) {
     filename = _private ? `private/${filename}` : `public/${filename}`;
-    console.log(filename)
     await this.storageService.uploadPublicFile(imageBuffer, filename);
     return {
       url: !_private ? `${this.configService.get("S3_HOST_URL")}/${filename}` : await this.downloadFile(filename),

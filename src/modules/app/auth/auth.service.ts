@@ -52,12 +52,12 @@ export class AuthService {
     return user;
   }
 
-  public async login(mssv: Student["mssv"]) {
-    const authToken = await this.generateForAuth(mssv);
-    await this.studentService.updateById(mssv, {
+  public async login(student: Student) {
+    const authToken = await this.generateForAuth(student.mssv);
+    await this.studentService.updateById(student.mssv, {
       moreInfo: authToken,
     });
-    return authToken;
+    return { ...authToken, user: student };
   }
 
   public async logout(mssv: Student["mssv"]) {

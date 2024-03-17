@@ -25,7 +25,7 @@ export class AuthController {
     type: LoginDto,
   })
   async login(@Req() req: RequestWithUser) {
-    return this.authService.login(req.user.mssv);
+    return this.authService.login(req.user);
   }
 
   @Post("register")
