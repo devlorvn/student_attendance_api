@@ -45,7 +45,6 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, "jwt-admin") {
         updatedAt: true,
       },
     });
-    console.log(admin);
 
     if (!admin) {
       throw ExceptionFactory.unauthorizedException({
