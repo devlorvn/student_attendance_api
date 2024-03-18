@@ -24,7 +24,7 @@ export class EventService {
         registers: {
           mssv: registered === "true" ? mssv : undefined,
         },
-        enable: true
+        enable: true,
       },
       take: 10,
       skip: (page - 1) * 10,
@@ -37,7 +37,7 @@ export class EventService {
     return {
       events: events.map((event) => ({
         ...event,
-        registred: event.registers.some((item: any) => item.mssv.mssv === mssv),
+        isRegistered: event.registers.some((item: any) => item.mssv.mssv === mssv),
         attendance: event.registers.some((item: any) => item.mssv.mssv === mssv && item.attendance),
       })),
       count,
@@ -52,7 +52,11 @@ export class EventService {
       relations: ["topics", "registers", "registers.mssv"],
     });
 
-    return { ...event, attendance: event.registers.some((item: any) => item.mssv.mssv === mssv && item.attendance) };
+    return {
+      ...event,
+      attendance: event.registers.some((item: any) => item.mssv.mssv === mssv && item.attendance),
+      isRegistered: event.registers.some((item: any) => item.mssv.mssv === mssv),
+    };
   }
 
   async topics() {
