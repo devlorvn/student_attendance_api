@@ -20,6 +20,7 @@ import { NotificationUserModule } from "./modules/manage/notificationUser/notifi
 import { FileModule } from "./modules/file/file.module";
 import { AccountModule } from "./modules/app/account/account.module";
 import { EventModule as AppEventModule } from "./modules/app/event/event.module";
+import { AttendanceModule } from "./modules/manage/attendance/attendance.module";
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { EventModule as AppEventModule } from "./modules/app/event/event.module"
     FileModule,
     AccountModule,
     AppEventModule,
+    AttendanceModule,
   ],
   controllers: [AppController],
   providers: [
