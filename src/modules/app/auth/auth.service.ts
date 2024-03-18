@@ -31,8 +31,6 @@ export class AuthService {
       },
     });
 
-    console.log(user);
-
     if (!user || !comparePass(password, user.password)) {
       throw ExceptionFactory.badRequestException({
         message: "Tài khoản hoặc mật khẩu không chính xác.",
