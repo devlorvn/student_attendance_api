@@ -18,74 +18,26 @@ export class StudentController {
   @Get("/test")
   async test() {
     try {
-      // async function downloadImage(url, filename) {
-      //   try {
-      //     const response = await fetch(url);
-      //     const arrayBuffer = await response.arrayBuffer();
-      //     const imageData = Buffer.from(arrayBuffer);
-
-      //     const directory = "public"; // Thư mục mà bạn muốn lưu hình ảnh vào
-      //     const filePath = join(directory, filename);
-
-      //     fs.writeFileSync(filePath, imageData); // Ghi dữ liệu hình ảnh vào tệp
-      //     console.log(`Image downloaded successfully to ${filePath}`);
-      //   } catch (error) {
-      //     console.error("Error downloading image:", error);
-      //   }
-      // }
-
-      // Gọi hàm downloadImage với URL của hình ảnh và tên tệp bạn muốn lưu
-      // downloadImage("https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/vannghe.jpg", "vannghe.jpg");
-
-      // const modelsPath = join(__dirname, "../../public/assets", "models");
-      // const modelsPath = "public/assets/" + "models";
-      // faceapi.env.monkeyPatch({ Canvas, Image, ImageData } as any);
-      // await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelsPath);
-      // await faceapi.nets.faceLandmark68Net.loadFromDisk(modelsPath);
-      // await faceapi.nets.faceRecognitionNet.loadFromDisk(modelsPath);
-      // const source = await this.faceDetectService.markLabelWithImages([
-      //   {
-      //     mssv: 51900587,
-      //     images: ["51900587.jpg"],
-      //   },
-      // ]);
-      // console.log(join(__dirname, "../../public/assets", "images", "51900587.jpg"));
-
       // const imgFetch = await loadImage("https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/vannghe.jpg");
-      // const res = await fetch(`https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/vannghe.jpg?Content-Type=image/jpeg`, {
-      //   headers: { "Content-Type": "image/*" },
-      // }).then(async (d) => await d.blob());
-      // console.log(res);
-      // const imgFetch = await faceapi.fetchImage(`public/vannghe.jpg`);
-      const publicDirectory = join(__dirname, "../../..", "public");
-      console.log(publicDirectory);
-      const imgPath = join(publicDirectory, "vannghe.jpg");
-      console.log(imgPath);
-      const imageBuffer = fs.readFileSync(imgPath);
-      console.log(imageBuffer);
-
-      // const img = await loadImage(imageBuffer);
-
-      const imgFetch = await faceapi.fetchImage(imgPath);
-
-      // const imgFetch = await faceapi.bufferToImage(imageBuffer);
-
-      // const img = new Image(); // Create a new canvas.Image object
-      // img.src = imgFetch.src;
-
-      //   await new Promise((resolve, reject) => {
-      //     img. = resolve;
-      //     img.onerror = reject;
+      // const response = await fetch("https://facial-detect-app.s3.ap-southeast-1.amazonaws.com/public/vannghe.jpg");
+      // const imageBuffer = await response.arrayBuffer(); // Convert response body to ArrayBuffer
+      // // Convert the ArrayBuffer to a Buffer
+      // const buffer = Buffer.from(imageBuffer);
+      // // Load the image into a canvas
+      // const image = new Image();
+      // image.src = buffer;
+      // await new Promise((resolve, reject) => {
+      //   image.onload = resolve;
+      //   image.onerror = reject;
       // });
-
-      // const cv = createCanvas(imgFetch.width, imgFetch.height);
-      // const ctx = cv.getContext("2d");
-      // ctx.drawImage(imgFetch, 0, 0, imgFetch.width, imgFetch.height);
-      // const imageData = ctx.getImageData(0, 0, cv.width, cv.height);
-      const detections = await faceapi.detectSingleFace(imgFetch).withFaceLandmarks().withFaceDescriptor();
-      // console.log(detections);
+      // const canvas = createCanvas(image.width, image.height);
+      // const ctx = canvas.getContext("2d");
+      // ctx.drawImage(image, 0, 0);
+      // const detections = await faceapi.detectSingleFace(canvas).withFaceLandmarks().withFaceDescriptor();
+      // const res = await this.faceDetectService.markLabelWithImages([{ mssv: 51900587, images: ["aaaa"] }]);
+      // console.log(res);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
     // throw ExceptionFactory.badRequestException({
     //   message: "aksksks",

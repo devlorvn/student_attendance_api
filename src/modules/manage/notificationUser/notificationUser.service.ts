@@ -58,7 +58,7 @@ export default class NotificationUserService {
       take: pagination.pageSize,
       skip: pagination.skip,
       order: pagination.orderBy,
-      // relations: ["notificationId"],
+      relations: ["notificationId"],
     });
   }
 
