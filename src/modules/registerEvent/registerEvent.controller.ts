@@ -17,6 +17,7 @@ import Event from "../manage/event/entities/event.entity";
 import NotificationService from "../manage/notification/notification.service";
 import NotificationUserService from "../manage/notificationUser/notificationUser.service";
 import { Student } from "../student/entities/student.entity";
+import * as dayjs from "dayjs";
 
 @Controller()
 @ApiTags("Register Event Manage API")
@@ -114,18 +115,23 @@ export default class RegisterEventController {
   @UseGuards(JwtAuthGuard)
   @Post("/app/register_event")
   async createRegisterEvent(@Body() registerEvent: CreateRegisterEventDto) {
-    const event = await this.eventService.findOneById(registerEvent.eventId);
-    if (event && event.registration && event.registered < event.amount && event.endRegistrationDate < new Date()) {
-      const result = await this.registerEventService.create(registerEvent);
-      if (result) {
-        await this.eventService.changeNumberRegistered(event.id, 1);
+    try {
+      const event = await this.eventService.findOneById(registerEvent.eventId);
+      if (event && event.registration && event.registered < event.amount && dayjs(event.endRegistrationDate).add(1, "day").isAfter(dayjs(), "date")) {
+        const result = await this.registerEventService.create(registerEvent);
+        if (result) {
+          await this.eventService.changeNumberRegistered(event.id, 1);
+        }
+        return result;
+      } else {
+        throw ExceptionFactory.badRequestException({
+          message: "Sự kiện không cho phép người dùng đăng kí hoặc đã quá hạn đăng kí",
+          errorCode: -1,
+        });
       }
-      return result;
-    } else {
-      throw ExceptionFactory.badRequestException({
-        message: "Sự kiện không cho phép người dùng đăng kí hoặc đã quá hạn đăng kí",
-        errorCode: -1,
-      });
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 }
