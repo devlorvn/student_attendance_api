@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Delete, Query, Res, UploadedFile, UploadedFiles, UseInterceptors, ParseBoolPipe, Patch } from "@nestjs/common";
 import { FileService } from "./file.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { ApiConsumes, ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiBody, ApiTags, ApiOkResponse } from "@nestjs/swagger";
 import { DeleteFileDto } from "./dto/delete-file.dto";
 
 @Controller("file")
@@ -92,5 +92,10 @@ export class FileController {
   })
   deleteFile(@Body() deleteFileDto: DeleteFileDto) {
     return this.fileService.deleteFile(deleteFileDto);
+  }
+
+  @Get('view')
+  getFiles(@Query('directory') directory: string) {
+    return this.fileService.getFiles(directory);
   }
 }
