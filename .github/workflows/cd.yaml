@@ -25,5 +25,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY_TGW }}/${{ secrets.DOCKER_USERNAME }}/student-attendance-api:v1
+          tags: ${{ secrets.DOCKER_USERNAME }}/student-attendance-api:v1
           file: ./Dockerfile
