@@ -7,7 +7,7 @@ WORKDIR /home/node/app
 COPY --chown=node:node package.json .
 COPY --chown=node:node yarn.lock .
 
-RUN npm ci
+RUN npm i
 
 COPY --chown=node:node . .
 
