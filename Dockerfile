@@ -11,6 +11,6 @@ RUN yarn --pure-lockfile
 
 COPY --chown=node:node . .
 
-EXPOSE 4040
+EXPOSE 3000
  
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start"]
