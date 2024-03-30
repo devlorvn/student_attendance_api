@@ -1,16 +1,15 @@
-FROM node:18-alpine
+FROM node:latest AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build:prod
 
-USER node
-RUN mkdir -p /home/node/app
-WORKDIR /home/node/app
-
-COPY --chown=node:node package.json .
-COPY --chown=node:node yarn.lock .
-
-RUN npm i
-
-COPY --chown=node:node . .
-
+FROM node:latest AS server
+WORKDIR /app
+COPY package* ./
+RUN npm install --production
+COPY --from=builder ./app/node_modules ./node_modules
+COPY --from=builder ./app/dist ./dist
 EXPOSE 3000
- 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:prod"]
