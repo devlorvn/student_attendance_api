@@ -23,7 +23,12 @@ export class AttendanceController {
           type: "string",
         },
         mssv: {
-          type: "number",
+          type: "array",
+          items: {
+            type: "string",
+            format: "number",
+            example: 0,
+          },
         },
         file: {
           type: "string",
@@ -33,12 +38,16 @@ export class AttendanceController {
     },
   })
   @UseInterceptors(FileInterceptor("file"))
-  async attendanceEvent(@UploadedFile() file: Express.Multer.File, @Body("eventId") eventId: string, @Body("mssv") mssv: number) {
+  async attendanceEvent(@UploadedFile() file: Express.Multer.File, @Body("eventId") eventId: string, @Body("mssv") mssv: string[]) {
     // const timestamp = Date.now();
     // const newFileName = `${file.originalname}_${timestamp}`;
     const result = await this.attendanceService.uploadFilePrivate(file.buffer, file.originalname);
     if (result) {
-      return this.attendanceService.updateAttendance(mssv, eventId, result.url.split("public/")[1]);
+      return this.attendanceService.updateAttendance(
+        mssv.map((m) => parseInt(m)),
+        eventId,
+        result.url.split("public/")[1]
+      );
     }
     return ExceptionFactory.badRequestException({
       message: "Lỗi",

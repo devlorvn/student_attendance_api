@@ -1,6 +1,6 @@
-import { Body, Controller, Param, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Patch, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiQuery, ApiTags } from "@nestjs/swagger";
-import { RegisterWithValidateDto, ValidateUsersDto } from "./dtos/validate.dto";
+import { RegisterWithValidateDto, RegistersWithValideDto, ValidateUsersDto } from "./dtos/validate.dto";
 import { StudentService } from "src/modules/student/student.service";
 import { Student } from "src/modules/student/entities/student.entity";
 import { RequestWithAdmin } from "../auth/authAdmin.interface";
@@ -70,6 +70,22 @@ export default class UserController {
     }
   }
 
+  @Post("/multiple")
+  async createMultiUser(@Body() payload: RegistersWithValideDto, @Req() byAdmin: RequestWithAdmin) {
+    // console.log(payload);
+    if (payload.autoValidate) {
+      const withValidate = payload.users.map((user) => ({
+        ...user,
+        password: user.password.toString(),
+        validate: true,
+        validateBy: byAdmin.user.id,
+        validateAt: new Date(),
+      }));
+      return this.studentService.createMultiple(withValidate);
+    }
+    return this.studentService.createMultiple(payload.users);
+  }
+
   @Patch("/validate")
   async validateUser(@Req() byAdmin: RequestWithAdmin, @Body() payload: ValidateUsersDto) {
     return await this.studentService.updateByIds(payload.ids, {
@@ -89,5 +105,10 @@ export default class UserController {
     // delete payload.password;
     // delete payload.mssv;
     await this.studentService.updateById(id, payload);
+  }
+
+  @Delete("/:id")
+  async deleteUser(@Param("id") mssv: number) {
+    return this.studentService.delete(mssv);
   }
 }

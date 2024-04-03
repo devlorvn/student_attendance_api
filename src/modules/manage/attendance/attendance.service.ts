@@ -24,13 +24,13 @@ export class AttendanceService {
     };
   }
 
-  async updateAttendance(mssv: Student["mssv"], eventId: Event["id"], imageURL: RegisterEvent["attendanceImage"]) {
+  async updateAttendance(mssv: Student["mssv"][], eventId: Event["id"], imageURL: RegisterEvent["attendanceImage"]) {
     const result = await this.registerEventRepository
       .createQueryBuilder()
       .update(RegisterEvent)
       .set({ attendanceImage: imageURL, attendance: true })
       .where("eventId = :eventId", { eventId })
-      .andWhere("mssv = :mssv", { mssv: mssv })
+      .andWhere("mssv IN (:...mssv)", { mssv })
       .execute();
     return result;
   }

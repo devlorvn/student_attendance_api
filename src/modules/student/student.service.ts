@@ -107,4 +107,16 @@ export class StudentService {
       console.log("Một vài id không được cập nhật do không tìm thấy");
     }
   }
+
+  async createMultiple(users: DeepPartial<Student>[]) {
+    const newUsers = users.map((user) => {
+      return this.studentRepository.create(user);
+    });
+    const result = await this.studentRepository.save(newUsers);
+    return result;
+  }
+
+  async delete(mssv: Student["mssv"]) {
+    return await this.studentRepository.delete(mssv);
+  }
 }

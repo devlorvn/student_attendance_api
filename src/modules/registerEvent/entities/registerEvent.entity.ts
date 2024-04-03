@@ -26,7 +26,7 @@ export default class RegisterEvent {
   })
   eventId: Event["id"];
 
-  @ManyToOne(() => Student, (student) => student.mssv)
+  @ManyToOne(() => Student, (student) => student.mssv, { onDelete: "CASCADE" })
   @JoinColumn({
     name: "mssv",
   })
